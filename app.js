@@ -22,9 +22,44 @@ app.post('/api/messages', connector.listen());
 
 // Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
 var bot = new builder.UniversalBot(connector, [
-  //session.send("You said: %s", session.message.text);
+ //session.send("You said: %s", session.message.text);
   function (session) {
-    session.beginDialog('greetings', session.userData.greetings);
+    session.beginDialog('welcome', session.userData.greetings);
+  },
+  function (session) {
+    session.beginDialog('setup', session.userData.settings);
+  }
+]);
+
+bot.dialog('welcome', [
+  function (session) {
+    builder.Prompts.confirm(session, 'Hey there! I\'m Gary, my name is just a placeholder I\'m not all that smart yet. My job is to make sure you complete your most important task everyday! Are you ready to get started?');
+  },
+  function (session, results) {
+
+    if (results.response) {
+      session.endDialog();
+    }
+    else {
+      session.endConversation("OK I'll leave you alone to continue your procrastinating ways.")
+    }
+  },
+]);
+
+bot.dialog('setup', [
+  function (session) {
+    builder.Prompts.text(session, 'Awesome! What is your name?');
+  },
+  function (session, results) {
+    session.dialogData.name = results.response;
+    builder.Prompts.time(session, `Hey ${session.dialogData.name}! What time would you like me to check in on you each day? eg, 6pm`);
+    // @todo: Need validation to ensure it's just a time, not a full date.
+    // @todo: NLP to check for o'clock, 6 (is it am or pm?) etc etc.
+    // @todo: store time in userData ("userData stores information globally for the user across all conversations")
+  },
+  function (session, results) {
+    session.dialogData.checkinTime = builder.EntityRecognizer.resolveTime([results.response]);
+    session.endDialog(`${session.dialogData.checkinTime} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
   }
 ]);
 
@@ -40,6 +75,6 @@ bot.dialog('newDay', [
     builder.Prompts.text(session, 'Hi! What is the absolute most important thing you need to do today?');
   },
   function (session, results) {
-    session.endDialog(`OK! So you\'ve got until this time tomorrow ${results.response}!`);
+    session.endDialog(`OK! So you\'ve got until this time tomorrow to complete the following: \n ${results.response}!`);
   }
 ]);
