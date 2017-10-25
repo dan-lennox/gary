@@ -2,15 +2,20 @@
   "name": "gary",
   "version": "1.0.0-alpha1",
   "description": "To do list bot that focuses on your top two priorities only.",
-  "main": "index.js",
+  "main": "bin/app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./src/app.js"
   },
   "author": "Daniel Lennox",
   "license": "ISC",
   "dependencies": {
     "botbuilder": "^3.11.0",
-    "express": "^4.16.1",
-    "restify": "^6.0.1"
+    "express": "^4.16.2"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "webpack": "^3.8.1"
   }
 }
