@@ -65,9 +65,13 @@ bot.dialog('setup', [
   },
   (session, results) => {
     session.dialogData.checkinTime = builder.EntityRecognizer.resolveTime([results.response]);
-    session.endDialog(`${session.dialogData.checkinTime} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
+
+    // @todo: test the localisation when you've added the notification. Make sure it arrives at the right time.
+    session.endDialog(`${Helpers.formatAMPM(session.dialogData.checkinTime)} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
   }
 ]);
+
+// @todo: Push the "did you do it message" at the correct time.
 
 // bot.dialog('setup
 // -- At this point, just
