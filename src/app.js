@@ -1,5 +1,4 @@
-// @todo: Setup gulp, webpack and babel.
-// @todo: restart the app on file changes (watch).
+'use strict';
 
 // Set a procress title so webpack can kill and restart the app on build.
 process.title = 'chatbot';
@@ -8,6 +7,10 @@ process.title = 'chatbot';
 const express = require('express');
 // Annoyingly, this needs to stay as require - https://github.com/Microsoft/BotBuilder/issues/2974
 const builder = require('botbuilder');
+
+const helpers = require("./helpers");
+
+let Helpers = new helpers();
 
 // Setup Express Server.
 let app = express();
