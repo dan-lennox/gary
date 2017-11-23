@@ -3,6 +3,9 @@
 // Set a procress title so webpack can kill and restart the app on build.
 process.title = 'chatbot';
 
+// Define and retrieve the commandline arguments.
+const args = require('yargs').argv;
+
 //import express from 'express';
 const express = require('express');
 // Annoyingly, this needs to stay as require - https://github.com/Microsoft/BotBuilder/issues/2974
@@ -33,10 +36,23 @@ app.post('/api/messages', connector.listen());
 let bot = new builder.UniversalBot(connector,
   [
     (session) => {
-      session.beginDialog('welcome', session.userData.greetings);
+
+      if (!session.userData.profile) {
+        // Initialise an empty user profile if one does not yet exist for the current user.
+        session.userData.profile = {};
+      }
+      else if (args.resetUser) {
+        // Clear any existing user data for testing purposes if the --resetData argument is present.
+        session.userData.profile = {};
+      }
+
+      // Begin the Welcome dialog.
+      session.beginDialog('welcome');
     },
     (session) => {
-      session.beginDialog('setup', session.userData.settings);
+
+      // Begin the Setup dialog.
+      session.beginDialog('setup');
     }
 ]);
 
