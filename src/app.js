@@ -65,8 +65,13 @@ bot.localePath(path.join(__dirname, './locale'));
  */
 bot.dialog('welcome', [
   (session) => {
-    builder.Prompts.confirm(session, 'Hey there! I\'m Gary, my name is just a placeholder I\'m not all that smart yet. My job is to make sure you complete your most important task everyday! Are you ready to get started?');
-    console.log('got here!!');
+
+    if (!session.userData.profile.name) {
+      builder.Prompts.confirm(session, 'Hey there! I\'m Gary, my name is just a placeholder I\'m not all that smart yet. My job is to make sure you complete your most important task everyday! Are you ready to get started?');
+    }
+    else {
+      session.endDialog();
+    }
   },
   (session, results) => {
     if (results.response) {
@@ -83,11 +88,37 @@ bot.dialog('welcome', [
  */
 bot.dialog('setup', [
   (session) => {
-    builder.Prompts.text(session, 'Awesome! What is your name?');
+    session.beginDialog('askForUserName');
+  },
+  (session) => {
+    session.beginDialog('askForCheckInTime');
+  }
+]);
+
+bot.dialog('askForUserName', [
+  (session) => {
+    console.log(session.userData);
+    if (session.userData.profile.name) {
+      session.endDialog();
+    }
+    else {
+      builder.Prompts.text(session, 'Awesome! What is your name?');
+    }
   },
   (session, results) => {
-    session.dialogData.name = results.response;
-    builder.Prompts.time(session, `Hey ${session.dialogData.name}! What time would you like me to check in on you each day? eg, 6pm`);
+
+    // Store the user's name in userData so that it persists globally across all conversations.
+    session.userData.profile = {
+      "name": results.response
+    };
+    session.endDialog();
+  }
+]);
+
+bot.dialog('askForCheckInTime', [
+  (session) => {
+
+    builder.Prompts.time(session, `Hey ${session.userData.profile.name}! What time would you like me to check in on you each day? eg, 6pm`);
     // @todo: Need validation to ensure it's just a time, not a full date.
     // @todo: NLP to check for o'clock, 6 (is it am or pm?) etc etc.
     // @todo: store time in userData ("userData stores information globally for the user across all conversations")
@@ -107,9 +138,9 @@ bot.dialog('setup', [
 // -- What is your name?
 // -- What time would you like to me to check in on you?
 
-// bot.dialog('yesterDay', [
+// bot.dialog('yesterday', [
 
-bot.dialog('newDay', [
+bot.dialog('today', [
   (session) => {
     builder.Prompts.text(session, 'Hi! What is the absolute most important thing you need to do today?');
   },
