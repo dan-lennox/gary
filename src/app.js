@@ -8,7 +8,9 @@ const express = require('express');
 // Annoyingly, this needs to stay as require - https://github.com/Microsoft/BotBuilder/issues/2974
 const builder = require('botbuilder');
 
-const helpers = require("./helpers");
+const helpers = require('./helpers');
+
+const path = require('path');
 
 let Helpers = new helpers();
 
@@ -27,16 +29,24 @@ let connector = new builder.ChatConnector({
 // Listen for messages from users
 app.post('/api/messages', connector.listen());
 
-// Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
-let bot = new builder.UniversalBot(connector, [
-  (session) => {
-    session.beginDialog('welcome', session.userData.greetings);
-  },
-  (session) => {
-    session.beginDialog('setup', session.userData.settings);
-  }
+// Initialise the bot.
+let bot = new builder.UniversalBot(connector,
+  [
+    (session) => {
+      session.beginDialog('welcome', session.userData.greetings);
+    },
+    (session) => {
+      session.beginDialog('setup', session.userData.settings);
+    }
 ]);
 
+// Make sure the bot knows where to look for our Botbuilder.json file which contains default message
+// overrides.
+bot.localePath(path.join(__dirname, './locale'));
+
+/**
+ * Welcome dialog
+ */
 bot.dialog('welcome', [
   (session) => {
     builder.Prompts.confirm(session, 'Hey there! I\'m Gary, my name is just a placeholder I\'m not all that smart yet. My job is to make sure you complete your most important task everyday! Are you ready to get started?');
@@ -52,6 +62,9 @@ bot.dialog('welcome', [
   },
 ]);
 
+/**
+ *
+ */
 bot.dialog('setup', [
   (session) => {
     builder.Prompts.text(session, 'Awesome! What is your name?');
