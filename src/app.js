@@ -37,13 +37,14 @@ let bot = new builder.UniversalBot(connector,
   [
     (session) => {
 
-      if (!session.userData.profile) {
-        // Initialise an empty user profile if one does not yet exist for the current user.
+      if (!session.userData.profile || args.resetUser) {
+        // Initialise an empty user profile object if one does not yet exist for the current user.
         session.userData.profile = {};
       }
-      else if (args.resetUser) {
-        // Clear any existing user data for testing purposes if the --resetData argument is present.
-        session.userData.profile = {};
+
+      if (!session.userData.settings || args.resetUser) {
+        // Initialise an empty user settings object if one does not yet exist for the current user.
+        session.userData.settings = {};
       }
 
       // Begin the Welcome dialog.
@@ -97,7 +98,7 @@ bot.dialog('setup', [
 
 bot.dialog('askForUserName', [
   (session) => {
-    console.log(session.userData);
+
     if (session.userData.profile.name) {
       session.endDialog();
     }
@@ -118,16 +119,25 @@ bot.dialog('askForUserName', [
 bot.dialog('askForCheckInTime', [
   (session) => {
 
-    builder.Prompts.time(session, `Hey ${session.userData.profile.name}! What time would you like me to check in on you each day? eg, 6pm`);
-    // @todo: Need validation to ensure it's just a time, not a full date.
-    // @todo: NLP to check for o'clock, 6 (is it am or pm?) etc etc.
-    // @todo: store time in userData ("userData stores information globally for the user across all conversations")
+    if (session.userData.settings.checkInTime) {
+      session.endDialog();
+    }
+    else {
+      builder.Prompts.time(session, `Hey ${session.userData.profile.name}! What time would you like me to check in on you each day? eg, 6pm`);
+      // @todo: Need validation to ensure it's just a time, not a full date.
+      // @todo: NLP to check for o'clock, 6 (is it am or pm?) etc etc.
+      // @todo: store time in userData ("userData stores information globally for the user across all conversations")
+    }
   },
   (session, results) => {
-    session.dialogData.checkinTime = builder.EntityRecognizer.resolveTime([results.response]);
+
+    // Retrieve the checkin time inputed by the user.
+    session.userData.settings = {
+      "checkInTime": builder.EntityRecognizer.resolveTime([results.response])
+    };
 
     // @todo: test the localisation when you've added the notification. Make sure it arrives at the right time.
-    session.endDialog(`${Helpers.formatAMPM(session.dialogData.checkinTime)} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
+    session.endDialog(`${Helpers.formatAMPM(session.userData.settings.checkInTime)} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
   }
 ]);
 
