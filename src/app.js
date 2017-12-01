@@ -15,13 +15,11 @@ const helpers = require('./helpers');
 
 const path = require('path');
 
-let Helpers = new helpers();
+const cron = require('./cron');
 
-// Setup Express Server.
-let app = express();
-app.listen(3000, function () {
-  console.log('Example app listening on port 3000!')
-});
+const fs = require('fs');
+
+let Helpers = new helpers();
 
 // Create chat connector for communicating with the Bot Framework Service
 let connector = new builder.ChatConnector({
@@ -29,13 +27,40 @@ let connector = new builder.ChatConnector({
   appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
+let bot = new builder.UniversalBot(connector);
+
+// Setup Express Server.
+let app = express();
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+
+  cron.jobs.start(bot);
+});
+
 // Listen for messages from users
 app.post('/api/messages', connector.listen());
 
 // Initialise the bot.
-let bot = new builder.UniversalBot(connector,
+bot.dialog('/',
   [
     (session) => {
+
+      console.log('Address', session.message.address);
+
+      //let savedAddress = session.message.address;
+
+      //console.log('bot connector', connector);
+
+      fs.writeFile("./testAddresses.txt", JSON.stringify(session.message.address), function(err) {
+        if(err) {
+          return console.log(err);
+        }
+
+        console.log("The file was saved!");
+      });
+
+      // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
+      //session.userData.savedAddress = savedAddress;
 
       if (!session.userData.profile || args.resetUser) {
         // Initialise an empty user profile object if one does not yet exist for the current user.
@@ -131,22 +156,19 @@ bot.dialog('askForCheckInTime', [
   },
   (session, results) => {
 
-    // Retrieve the checkin time inputed by the user.
+    // Retrieve the checkin time inputed by the user (Let the botbuilder convert the response to
+    // a javascript date object.
+    let time = builder.EntityRecognizer.resolveTime([results.response]);
+
+    // Save a timestamp to the Session User Data.
     session.userData.settings = {
-      "checkInTime": builder.EntityRecognizer.resolveTime([results.response])
+      "checkInTime": Math.round(time.getTime()/1000)
     };
 
     // @todo: test the localisation when you've added the notification. Make sure it arrives at the right time.
-    session.endDialog(`${Helpers.formatAMPM(session.userData.settings.checkInTime)} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
+    session.endDialog(`${Helpers.formatAMPM(time)} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
   }
 ]);
-
-// @todo: Push the "did you do it message" at the correct time.
-
-// bot.dialog('setup
-// -- At this point, just
-// -- What is your name?
-// -- What time would you like to me to check in on you?
 
 // bot.dialog('yesterday', [
 
@@ -158,3 +180,22 @@ bot.dialog('today', [
     session.endDialog(`OK! So you\'ve got until this time tomorrow to complete the following: \n ${results.response}!`);
   }
 ]);
+
+/**
+ * Attempt to process the user's daily task.
+ */
+bot.dialog('processDailyTasks', (session, args, next) => {
+
+  console.log('actually attempted to call this?');
+
+  console.log('User Data: ', session.userData.settings.checkInTime);
+  // @todo: The date is there, but it's a javascript date object. Need to change this to a timestamp to
+  // avoid issues later.
+
+  //if (session.message.text === "done") {
+    //session.send("Great, back to the original conversation");
+    //session.endDialog();
+  //} else {
+  session.send('Hello, I\'m the survey dialog. I\'m interrupting your conversation to ask you a question. Type "done" to resume');
+  //}
+});
