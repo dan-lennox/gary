@@ -3,23 +3,56 @@
 // Set a procress title so webpack can kill and restart the app on build.
 process.title = 'chatbot';
 
+
+// Core dependencies.
+const path = require('path');
+const fs = require('fs');
+
+// Load environment variables.
+require('dotenv').config({path: path.join(__dirname, '../.env')});
+
+// Contrib dependencies.
+const express = require('express');
+const builder = require('botbuilder');
+const azureBot = require('botbuilder-azure');
+const azure = require('azure-storage');
+
+// Custom dependencies.
+const addresses = require('./models/addresses.model');
+const helpers = require('./helpers');
+const cron = require('./cron');
+const azureConfig = require('./config/azure');
+
 // Define and retrieve the commandline arguments.
 const args = require('yargs').argv;
 
-//import express from 'express';
-const express = require('express');
-// Annoyingly, this needs to stay as require - https://github.com/Microsoft/BotBuilder/issues/2974
-const builder = require('botbuilder');
-
-const helpers = require('./helpers');
-
-const path = require('path');
-
-const cron = require('./cron');
-
-const fs = require('fs');
-
+// @todo: Make it so I don't need to initialise this, as with cron.
 let Helpers = new helpers();
+
+// Define Cosmos DB settings.
+// @todo: Store this config elsewhere. Look up best practice.
+// var documentDbOptions = {
+//   host: 'https://todobot.documents.azure.com:443/',
+//   masterKey: 'RmmI8Jco6IsVch2YoKNMW1TXFkdc8LIFI68ALvIxrwDUdwN6iHCGcaTG3nkIYY6kNpdw7R3mesIuK3MNzdFHWA==',
+//   database: 'todobot',
+//   collection: 'botdata'
+// };
+// var docDbClient = new azure.DocumentDbClient(documentDbOptions);
+// var cosmosStorage = new azure.AzureBotStorage({ gzipData: false }, docDbClient);
+
+// Define Azure Table Storage settings.
+
+
+// Initialise the Azure Table Storage.
+var azureTableClient = new azureBot.AzureTableClient(
+  azureConfig.botTableName,
+  process.env.AZURE_STORAGE_ACCOUNT,
+  process.env.AZURE_STORAGE_ACCESS_KEY
+);
+var tableStorage = new azureBot.AzureBotStorage({gzipData: false}, azureTableClient);
+
+// Initialise the azure entity generator for generating storable entities.
+var entGen = azure.TableUtilities.entityGenerator;
 
 // Create chat connector for communicating with the Bot Framework Service
 let connector = new builder.ChatConnector({
@@ -27,29 +60,38 @@ let connector = new builder.ChatConnector({
   appPassword: process.env.MICROSOFT_APP_PASSWORD
 });
 
-let bot = new builder.UniversalBot(connector);
+// Initialise the bot using the defined bot connector and storage option.
+let bot = new builder.UniversalBot(connector).set('storage', tableStorage);
+
+// Make sure the bot knows where to look for our Botbuilder.json file which contains default message
+// overrides.
+bot.localePath(path.join(__dirname, './locale'));
 
 // Setup Express Server.
 let app = express();
 app.listen(3000, function () {
-  console.log('Example app listening on port 3000!');
+  console.log('Todobot is listening on port 3000!');
 
+  // Initialise cron for timed events.
   cron.jobs.start(bot);
 });
 
 // Listen for messages from users
 app.post('/api/messages', connector.listen());
 
+
+//@todo: Organise the dialog's below somehow. Or at least put all of them in a single 'dialogs' file to start with.
+
 // Initialise the bot.
 bot.dialog('/',
   [
     (session) => {
 
-      console.log('Address', session.message.address);
+      console.log('did I even get to here?');
 
-      //let savedAddress = session.message.address;
+      //console.log('Address', session.message.address);
 
-      //console.log('bot connector', connector);
+      // @todo:
 
       fs.writeFile("./testAddresses.txt", JSON.stringify(session.message.address), function(err) {
         if(err) {
@@ -59,10 +101,31 @@ bot.dialog('/',
         console.log("The file was saved!");
       });
 
+      // // Retrieve the message address from the session.
+      // let address = session.message.address;
+      //
+      // // Define an Azure Table entity representing the message address.
+      // let entity = {
+      //   PartitionKey: entGen.String('part1'),
+      //   RowKey: entGen.String(address.id),
+      //   messageAddress: JSON.stringify(address)
+      // };
+      //
+      // // Save the address to the Azure Table Storage table.
+      // tableService.insertEntity(addressesTableName, entity, function(error, result, response) {
+      //   if (!error) {
+      //     // result contains the ETag for the new entity
+      //   }
+      //   // @todo: need to avoid saving duplicates obviously... hopefully the rowkey stops this automatically.
+      //   console.log('attempt to save address', response);
+      // });
+
       // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
       //session.userData.savedAddress = savedAddress;
 
+      console.log('outside');
       if (!session.userData.profile || args.resetUser) {
+        console.log('got here');
         // Initialise an empty user profile object if one does not yet exist for the current user.
         session.userData.profile = {};
       }
@@ -81,10 +144,6 @@ bot.dialog('/',
       session.beginDialog('setup');
     }
 ]);
-
-// Make sure the bot knows where to look for our Botbuilder.json file which contains default message
-// overrides.
-bot.localePath(path.join(__dirname, './locale'));
 
 /**
  * Welcome dialog
@@ -188,7 +247,7 @@ bot.dialog('processDailyTasks', (session, args, next) => {
 
   console.log('actually attempted to call this?');
 
-  console.log('User Data: ', session.userData.settings.checkInTime);
+  //console.log('User Data: ', session.userData.settings.checkInTime);
   // @todo: The date is there, but it's a javascript date object. Need to change this to a timestamp to
   // avoid issues later.
 
