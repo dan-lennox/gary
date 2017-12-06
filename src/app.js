@@ -15,33 +15,20 @@ require('dotenv').config({path: path.join(__dirname, '../.env')});
 const express = require('express');
 const builder = require('botbuilder');
 const azureBot = require('botbuilder-azure');
-const azure = require('azure-storage');
 
 // Custom dependencies.
-const addresses = require('./models/addresses.model');
 const helpers = require('./helpers');
 const cron = require('./cron');
 const azureConfig = require('./config/azure');
+
+// Models
+const addressModel = require('./models/address.model');
 
 // Define and retrieve the commandline arguments.
 const args = require('yargs').argv;
 
 // @todo: Make it so I don't need to initialise this, as with cron.
 let Helpers = new helpers();
-
-// Define Cosmos DB settings.
-// @todo: Store this config elsewhere. Look up best practice.
-// var documentDbOptions = {
-//   host: 'https://todobot.documents.azure.com:443/',
-//   masterKey: 'RmmI8Jco6IsVch2YoKNMW1TXFkdc8LIFI68ALvIxrwDUdwN6iHCGcaTG3nkIYY6kNpdw7R3mesIuK3MNzdFHWA==',
-//   database: 'todobot',
-//   collection: 'botdata'
-// };
-// var docDbClient = new azure.DocumentDbClient(documentDbOptions);
-// var cosmosStorage = new azure.AzureBotStorage({ gzipData: false }, docDbClient);
-
-// Define Azure Table Storage settings.
-
 
 // Initialise the Azure Table Storage.
 var azureTableClient = new azureBot.AzureTableClient(
@@ -50,9 +37,6 @@ var azureTableClient = new azureBot.AzureTableClient(
   process.env.AZURE_STORAGE_ACCESS_KEY
 );
 var tableStorage = new azureBot.AzureBotStorage({gzipData: false}, azureTableClient);
-
-// Initialise the azure entity generator for generating storable entities.
-var entGen = azure.TableUtilities.entityGenerator;
 
 // Create chat connector for communicating with the Bot Framework Service
 let connector = new builder.ChatConnector({
@@ -87,45 +71,7 @@ bot.dialog('/',
   [
     (session) => {
 
-      console.log('did I even get to here?');
-
-      //console.log('Address', session.message.address);
-
-      // @todo:
-
-      fs.writeFile("./testAddresses.txt", JSON.stringify(session.message.address), function(err) {
-        if(err) {
-          return console.log(err);
-        }
-
-        console.log("The file was saved!");
-      });
-
-      // // Retrieve the message address from the session.
-      // let address = session.message.address;
-      //
-      // // Define an Azure Table entity representing the message address.
-      // let entity = {
-      //   PartitionKey: entGen.String('part1'),
-      //   RowKey: entGen.String(address.id),
-      //   messageAddress: JSON.stringify(address)
-      // };
-      //
-      // // Save the address to the Azure Table Storage table.
-      // tableService.insertEntity(addressesTableName, entity, function(error, result, response) {
-      //   if (!error) {
-      //     // result contains the ETag for the new entity
-      //   }
-      //   // @todo: need to avoid saving duplicates obviously... hopefully the rowkey stops this automatically.
-      //   console.log('attempt to save address', response);
-      // });
-
-      // (Save this information somewhere that it can be accessed later, such as in a database, or session.userData)
-      //session.userData.savedAddress = savedAddress;
-
-      console.log('outside');
-      if (!session.userData.profile || args.resetUser) {
-        console.log('got here');
+      if (!session.userData.profile || args.resetUser) {;
         // Initialise an empty user profile object if one does not yet exist for the current user.
         session.userData.profile = {};
       }
@@ -135,8 +81,16 @@ bot.dialog('/',
         session.userData.settings = {};
       }
 
-      // Begin the Welcome dialog.
-      session.beginDialog('welcome');
+      let address = new addressModel();
+
+      address.create(session.message.address).subscribe(
+        () => {
+
+          // Begin the Welcome dialog.
+          session.beginDialog('welcome');
+        },
+        (error) => {}
+      );
     },
     (session) => {
 
