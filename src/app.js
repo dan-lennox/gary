@@ -53,9 +53,11 @@ bot.localePath(path.join(__dirname, './locale'));
 
 // Setup Express Server.
 let app = express();
-app.listen(3000, function () {
-  console.log('Todobot is listening on port 3000!');
 
+// Use dynamic port binding.
+const PORT = process.env.port || 3000;
+
+app.listen(PORT, function () {
   // Initialise cron for timed events.
   cron.jobs.start(bot);
 });
