@@ -23,14 +23,12 @@ module.exports = class Address {
       // Define an Azure Table entity representing the message address.
       let entity = {
         PartitionKey: this.entGen.String(AzureConfig.addressesTablePartition),
-        RowKey: this.entGen.String(String(address.id)),
+        RowKey: this.entGen.String(String(address.user.id)),
         messageAddress: JSON.stringify(address)
       };
 
-      console.log('address before saving', address);
-
       // // Save the address to the Azure Table Storage table.
-      this.tableService.insertEntity(AzureConfig.addressesTableName, entity, function(error, result, response) {
+      this.tableService.insertOrReplaceEntity(AzureConfig.addressesTableName, entity, function(error, result, response) {
         if (error) {
           console.log('Error: ', error);
           observer.error(error);
