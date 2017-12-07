@@ -59,7 +59,7 @@ const PORT = process.env.port || 3000;
 
 app.listen(PORT, function () {
   // Initialise cron for timed events.
-  cron.jobs.start(bot);
+  //cron.jobs.start(bot);
 });
 
 // Listen for messages from users
