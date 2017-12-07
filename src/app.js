@@ -61,7 +61,7 @@ app.listen(PORT, function () {
   // Initialise cron for timed events.
   // @todo: Fix sending of bot here, use require('cron')(bot) instead. So that all cron jobs
   // already have access to the bot.
-  //cron.jobs.start(bot);
+  cron.jobs.start(bot);
 });
 
 // Listen for messages from users
