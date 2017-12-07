@@ -8,7 +8,8 @@
     "npm": "5.0.3"
   },
   "scripts": {
-    "start": "node ./src/app.js"
+    "start": "node ./src/app.js",
+    "dev": "nodemon ./src/app.js"
   },
   "author": "Daniel Lennox",
   "license": "ISC",
@@ -19,6 +20,7 @@
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "node-cron": "^1.2.1",
+    "nodemon": "^1.12.5",
     "path": "^0.12.7",
     "rxjs": "^5.5.4",
     "yargs": "^10.0.3"
