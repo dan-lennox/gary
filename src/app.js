@@ -59,6 +59,8 @@ const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, function () {
   // Initialise cron for timed events.
+  // @todo: Fix sending of bot here, use require('cron')(bot) instead. So that all cron jobs
+  // already have access to the bot.
   //cron.jobs.start(bot);
 });
 
@@ -91,7 +93,9 @@ bot.dialog('/',
           // Begin the Welcome dialog.
           session.beginDialog('welcome');
         },
-        (error) => {}
+        (error) => {
+          console.log('error creating address', error);
+        }
       );
     },
     (session) => {

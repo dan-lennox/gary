@@ -20,6 +20,7 @@ module.exports = class Address {
    */
   create(address) {
     return Rx.Observable.create((observer) => {
+
       // Define an Azure Table entity representing the message address.
       let entity = {
         PartitionKey: this.entGen.String(AzureConfig.addressesTablePartition),
@@ -34,6 +35,7 @@ module.exports = class Address {
           observer.error(error);
         }
         else {
+          observer.next();
           observer.complete();
         }
       });
