@@ -2,7 +2,7 @@
 
 module.exports = class helpers {
 
-  formatAMPM(date) {
+  static formatAMPM(date) {
     var hours = date.getHours();
     var minutes = date.getMinutes();
     var ampm = hours >= 12 ? 'pm' : 'am';

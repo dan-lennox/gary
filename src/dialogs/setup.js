@@ -1,11 +1,8 @@
 'use strict';
 
-const helpers = require('../helpers');
+const Helpers = require('../helpers');
 
 module.exports = (bot, builder) => {
-
-  // @todo: Make it so I don't need to initialise this, as with cron.
-  let Helpers = new helpers();
 
   /**
    *
