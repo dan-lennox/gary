@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = (bot, builder) => {
 
   // bot.dialog('yesterday', [
@@ -18,17 +16,35 @@ module.exports = (bot, builder) => {
    */
   bot.dialog('processDailyTasks', (session, args, next) => {
 
-    console.log('actually attempted to call this?');
+    if (session.userData.settings.checkInTime) {
 
-    //console.log('User Data: ', session.userData.settings.checkInTime);
-    // @todo: The date is there, but it's a javascript date object. Need to change this to a timestamp to
-    // avoid issues later.
+      // Retrieve the check in date from the userData store.
+      let checkInDate = new Date(session.userData.settings.checkInTime * 1000);
+
+      // Convert this to a checkin time (cull the non-time portions of the stored date).
+      let checkInTime = new Date();
+      checkInTime.setHours(checkInDate.getHours(), checkInDate.getMinutes(), 0);
+
+      // Declare a Date object to represent the current time.
+      let currentTime = new Date();
+
+      // Debug.
+      console.log('checkintime', checkInTime);
+      console.log('now', currentTime);
+
+      // Pro-actively message the user if the check-in time has passed.
+      if (checkInTime < currentTime) {
+        session.send('Hello, I\'m the survey dialog. I\'m interrupting your conversation to ask you a question. Type "done" to resume');
+      }
+    }
+
+    session.endDialog();
+
 
     //if (session.message.text === "done") {
     //session.send("Great, back to the original conversation");
     //session.endDialog();
     //} else {
-    session.send('Hello, I\'m the survey dialog. I\'m interrupting your conversation to ask you a question. Type "done" to resume');
     //}
   });
 
