@@ -29,7 +29,7 @@ module.exports = class Address {
       };
 
       // // Save the address to the Azure Table Storage table.
-      this.tableService.insertOrReplaceEntity(AzureConfig.addressesTableName, entity, function(error, result, response) {
+      this.tableService.insertOrReplaceEntity('botdata', entity, function(error, result, response) {
         if (error) {
           console.log('Error: ', error);
           observer.error(error);
@@ -51,7 +51,7 @@ module.exports = class Address {
       var query = new Azure.TableQuery();
 
       // Query the Addresses table for all addresses.
-      this.tableService.queryEntities(AzureConfig.addressesTableName, query, null, function (error, result, response) {
+      this.tableService.queryEntities('botdata', query, null, function (error, result, response) {
         if (error) {
           console.log('Error: ', error);
           observer.error(error);

@@ -33,6 +33,9 @@ module.exports = (bot, builder) => {
       console.log('now', currentTime);
 
       // Pro-actively message the user if the check-in time has passed.
+      // @todo: This will work! But it won't do it just once a day, it will do it every time cron
+      // runs (currently once per min) after the checkInTime has passed.
+      // Do we then need to store a flag?
       if (checkInTime < currentTime) {
         session.send('Hello, I\'m the survey dialog. I\'m interrupting your conversation to ask you a question. Type "done" to resume');
       }
