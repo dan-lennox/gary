@@ -1,7 +1,12 @@
 'use strict';
 
+//@todo: Replace with a technique that doesn't require instantiation of an object to use.
+// Eg, import * as helpers - but using require() instead since node doesn't support es6 modules.
+// See react tut project.
+
 module.exports = class helpers {
 
+  // @todo: This is silly... lets pull in moment.js for this instead.
   static formatAMPM(date) {
     var hours = date.getHours();
     var minutes = date.getMinutes();
