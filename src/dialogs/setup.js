@@ -1,6 +1,7 @@
 'use strict';
 
 const Helpers = require('../helpers');
+const User = require('../models/user.model');
 
 module.exports = (bot, builder) => {
 
@@ -28,10 +29,9 @@ module.exports = (bot, builder) => {
     },
     (session, results) => {
 
-      // Store the user's name in userData so that it persists globally across all conversations.
-      session.userData.profile = {
-        "name": results.response
-      };
+      let user = new User(session.userData);
+      user.setName(results.response);
+
       session.endDialog();
     }
   ]);
@@ -43,7 +43,9 @@ module.exports = (bot, builder) => {
         session.endDialog();
       }
       else {
-        builder.Prompts.time(session, `Hey ${session.userData.profile.name}! What time would you like me to check in on you each day? eg, 6pm`);
+        let user = new User(session.userData);
+
+        builder.Prompts.time(session, `Hey ${user.getName()}! What time would you like me to check in on you each day? eg, 6pm`);
         // @todo: Need validation to ensure it's just a time, not a full date.
         // @todo: NLP to check for o'clock, 6 (is it am or pm?) etc etc.
         // @todo: store time in userData ("userData stores information globally for the user across all conversations")
