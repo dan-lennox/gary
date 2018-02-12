@@ -1,6 +1,7 @@
 // session.userdata
 // Wrapper class for manipulating the userData object stored
 // on the bot session in a consistent way.
+const Day = require('./day.model');
 
 module.exports = class User {
 
@@ -27,8 +28,9 @@ module.exports = class User {
     return this._user.profile.name;
   }
 
-  setCheckInTime() {
-
+  setCheckInTime(time) {
+    // Save a timestamp to the Session User Data.
+    this._user.settings.checkInTime = Math.round(time.getTime()/1000);
   }
 
   getCheckInTime() {
@@ -39,8 +41,11 @@ module.exports = class User {
     return this._user;
   }
 
-  // save(session) {
-  //   session.userData = this._user;
-  // }
+  addDay(day) {
+    this._user.days.push(day.getDay());
+  }
 
+  getMostRecentDay() {
+    return (this._user.days.length > 0) ? new Day(this._user.days[this._user.days.length - 1]) : null;
+  }
 };
