@@ -14,6 +14,9 @@ module.exports = (bot, builder) => {
     },
     (session) => {
       session.beginDialog('askForCheckInTime');
+    },
+    (session) => {
+      session.beginDialog('today');
     }
   ]);
 
@@ -52,17 +55,16 @@ module.exports = (bot, builder) => {
       }
     },
     (session, results) => {
+      let user = new User(session.userData);
 
       // Retrieve the checkin time inputed by the user (Let the botbuilder convert the response to
       // a javascript date object.
       let time = builder.EntityRecognizer.resolveTime([results.response]);
+      // Save the check in time.
+      user.setCheckInTime(time);
 
-      // Save a timestamp to the Session User Data.
-      session.userData.settings = {
-        "checkInTime": Math.round(time.getTime()/1000)
-      };
-
-      // @todo: test the localisation when you've added the notification. Make sure it arrives at the right time.
+      // Let the user know the time is set.
+      // @todo: Replace helper function with moment js.
       session.endDialog(`${Helpers.formatAMPM(time)} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
     }
   ]);
