@@ -1,4 +1,6 @@
 const User = require('../models/user.model');
+const Day = require('../models/day.model');
+const Task = require('../models/day.model');
 
 module.exports = (bot, builder) => {
 
@@ -6,24 +8,49 @@ module.exports = (bot, builder) => {
 
   bot.dialog('today', [
     (session) => {
-      builder.Prompts.text(session, 'Hi! What is the absolute most important thing you need to do today?');
+
+      // Load the user.
+      let user = new User(session.userData);
+
+      // Store a date object representing the most recent 'Day' stored for the current user.
+      let lastDay = user.getMostRecentDay().getDate();
+
+      // Make note of the current date.
+      let today = new Date();
+
+      if (!lastDay || lastDay.getDate() !== today.getDate()) {
+        // If the user hasn't set a task for today.
+        builder.Prompts.text(session, 'Hi! What is the absolute most important thing you need to do today?');
+
+      }
+      else {
+        // Otherwise a task has already been set.
+        // @todo: At this point, if the user says anything, we just remind them of the task
+        // they need to do by tomorrow.
+        // session.endDialog(`You committed to getting ${taskName} done by ${time}`);
+        session.endDialog(`You already have a task today.`);
+      }
     },
     (session, results) => {
 
-      // Store the task in the UserData session storage.
+      // Store the task name provided by the user.
       let taskName = results.response;
 
-      // @todo: fill in { this time }.
-      console.log('user data', session.userData);
+      // Load the user.
       let user = new User(session.userData);
 
-      console.log('user name: ', user.getName());
+      // Initialise a new 'Day'.
+      let today = new Day();
 
+      // Add the task to the day.
+      today.addTask(new Task(taskName));
+
+      // Add the day to the user.
+      user.addDay(today);
+
+      // @todo: fill in { this time }.
       session.endDialog(`OK! So you\'ve got until this time tomorrow to complete the following: \n ${taskName}!`);
     }
-
-    // @todo: At this point, if the user says anything, we just remind them of the task
-    // they need to do by tomorrow.
   ]);
 
   /**
@@ -61,7 +88,7 @@ module.exports = (bot, builder) => {
       // let test = {
       //   days: [
       //     {
-      //       date: '12345678', // Don't store the time. Just granularity of day.
+      //       date: Date,
       //       checked: false,
       //       tasks: [
       //         {
