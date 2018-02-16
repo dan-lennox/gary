@@ -13,22 +13,26 @@ module.exports = (bot, builder) => {
       let user = new User(session.userData);
 
       // Store a date object representing the most recent 'Day' stored for the current user.
-      let lastDay = user.getMostRecentDay().getDate();
+      let lastDay = user.getMostRecentDay();
 
       // Make note of the current date.
       let today = new Date();
 
-      if (!lastDay || lastDay.getDate() !== today.getDate()) {
+      if (!lastDay || lastDay.getDate().getDate() !== today.getDate()) {
         // If the user hasn't set a task for today.
         builder.Prompts.text(session, 'Hi! What is the absolute most important thing you need to do today?');
 
       }
       else {
+
+        // @todo: FUN - See if the Microsoft bot service can handle any random
+        // strings here, like greetings etc. If it can't, then default to "You already have a task".
+
         // Otherwise a task has already been set.
         // @todo: At this point, if the user says anything, we just remind them of the task
         // they need to do by tomorrow.
         // session.endDialog(`You committed to getting ${taskName} done by ${time}`);
-        session.endDialog(`You already have a task today.`);
+        session.endDialog(`You already have a task today`);
       }
     },
     (session, results) => {
