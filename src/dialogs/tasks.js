@@ -47,7 +47,7 @@ module.exports = (bot, builder) => {
       let today = new Day();
 
       // Add the task to the day.
-      today.addTask(new Task(taskName));
+      today.addTask(taskName);
 
       // Add the day to the user.
       user.addDay(today);

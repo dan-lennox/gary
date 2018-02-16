@@ -1,8 +1,9 @@
 module.exports = class Task {
 
-  constructor(name){
+  constructor({ name, completed }){
+
     this._name = name;
-    this._completed = false;
+    this._completed = (typeof completed !== 'undefined') ? completed : false;
   }
 
   getCompleted() {
@@ -10,10 +11,14 @@ module.exports = class Task {
   }
 
   setCompleted() {
-    this.completed = true;
+    this._.completed = true;
   }
 
   getName() {
     return this._name;
+  }
+
+  getTask() {
+    return { name: this._name, completed: this._completed };
   }
 };

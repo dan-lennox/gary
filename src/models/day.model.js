@@ -1,5 +1,4 @@
-
-
+const Task = require('./task.model');
 // {
 //   date: '12345678', // Don't store the time. Just granularity of day.
 //   checked: false,
@@ -43,7 +42,8 @@ module.exports = class Day {
     return this._day.checked;
   }
 
-  addTask(task) {
-    this._day.tasks.push(task);
+  addTask(name) {
+    let task = new Task({ name });
+    this._day.tasks.push(task.getTask());
   }
 };
