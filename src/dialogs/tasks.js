@@ -12,16 +12,12 @@ module.exports = (bot, builder) => {
       // Load the user.
       let user = new User(session.userData);
 
-      // Store a date object representing the most recent 'Day' stored for the current user.
+      // Load the most recent day created for this user.
       let mostRecentDay = user.getMostRecentDay();
 
-      // Make note of the current date.
-      let today = new Date();
-
-      if (!mostRecentDay || mostRecentDay.getDate().getDate() !== today.getDate()) {
+      if (!mostRecentDay || new Date() > mostRecentDay.getDate()) {
         // If the user hasn't set a task for today or if this is their first time using the bot.
         builder.Prompts.text(session, 'What is the absolute MOST IMPORTANT thing you need to do today?');
-
       }
       else {
 
@@ -77,7 +73,7 @@ module.exports = (bot, builder) => {
     let mostRecentDay = user.getMostRecentDay();
 
     // Debug.
-    // mostRecentDay.setChecked(false);
+    //mostRecentDay.setChecked(false);
 
     // Don't check in with the user more than once.
     if (!mostRecentDay || mostRecentDay.getChecked()) {
@@ -98,31 +94,35 @@ module.exports = (bot, builder) => {
     // Declare a Date object to represent the current time.
     let currentTime = new Date();
 
-    //debugger;
-
     // If the checkin time has passed.
     // Debug.
     //if (currentTime < checkInDate) {
     if (currentTime > checkInDate) {
-      //debugger;
 
       // Record that the user's task for this day was checked.
       // We only want to prompt them once via cron to see if they have completed their task.
       mostRecentDay.setChecked();
 
-      let currentTask = new Task(mostRecentDay.getTask()).getName();
-
-      session.send(`Greetings supreme leader ${user.getName()}. Your most import task yesterday was: "${currentTask}". Have you completed it yet?`);
+      session.beginDialog('checkIn');
     }
+    else {
+      session.endDialog();
+    }
+  });
 
+  /**
+   *
+   */
+  bot.dialog('checkIn', (session, args, next) => {
+    let user = new User(session.userData);
+
+    // Load the most recent Day.
+    let mostRecentDay = user.getMostRecentDay();
+
+    let currentTask = mostRecentDay.getTask().getName();
+
+    session.send(`WORKING Greetings supreme leader ${user.getName()}. Your most import task yesterday was: "${currentTask}". Have you completed it yet?`);
     session.endDialog();
-
-
-    //if (session.message.text === "done") {
-    //session.send("Great, back to the original conversation");
-    //session.endDialog();
-    //} else {
-    //}
   });
 
 };
