@@ -55,6 +55,6 @@ module.exports = class Day {
   }
 
   getTask() {
-    return this._day.tasks[0];
+    return new Task(this._day.tasks[0]);
   }
 };
