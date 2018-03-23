@@ -79,35 +79,15 @@ module.exports = (bot, builder) => {
       // Declare a Date object to represent the current time.
       let currentTime = new Date();
 
-      // Debug.
-      console.log('checkintime', time);
-      console.log('now', currentTime);
+      // Load the most recent Day.
+      let yesterday = user.getMostRecentDay();
 
-      // Pro-actively message the user if the check-in time has passed.
-      // @todo: This will work! But it won't do it just once a day, it will do it every time cron
-      // runs (currently once per min) after the checkInTime has passed.
-      // Do we then need to store a flag?
-      //
-      // We should store more than that...
-      // A user's previous data is interesting. Could be used for a dashboard layout etc.
-      //
-      // let test = {
-      //   days: [
-      //     {
-      //       date: Date,
-      //       checked: false,
-      //       tasks: [
-      //         {
-      //           task: 'Do my homework!',
-      //           completed: false
-      //         }
-      //       ]
-      //     }
-      //   ]
-      // };
+      if (time < currentTime && !yesterday.getChecked()) { // && yesterday.checked = false
 
-      if (time < currentTime) { // && yesterday.checked = false
-        console.log('user data', session.userData);
+        // Record that the user's task for this day was already checked.
+        // We only want to prompt them once via cron to see if they have completed their task.
+        yesterday.setChecked();
+
         session.send('Hello, I\'m the survey dialog. I\'m interrupting your conversation to ask you a question. Type "done" to resume');
       }
     }

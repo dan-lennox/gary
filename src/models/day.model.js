@@ -33,8 +33,8 @@ module.exports = class Day {
     return this._day;
   }
 
-  setChecked(checked) {
-    this._day.checked = checked;
+  setChecked() {
+    this._day.checked = true;
   }
 
   getDate() {
