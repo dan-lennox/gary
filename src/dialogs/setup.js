@@ -1,7 +1,7 @@
 'use strict';
 
-const Helpers = require('../helpers');
 const User = require('../models/user.model');
+const moment = require('moment');
 
 module.exports = (bot, builder) => {
 
@@ -65,7 +65,7 @@ module.exports = (bot, builder) => {
 
       // Let the user know the time is set.
       // @todo: Replace helper function with moment js.
-      session.endDialog(`${Helpers.formatAMPM(time)} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
+      session.endDialog(`${moment(time).format('h:mm a')} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
     }
   ]);
 

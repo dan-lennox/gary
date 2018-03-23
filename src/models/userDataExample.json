@@ -1,0 +1,26 @@
+{
+  profile: {
+    name: 'Dan'
+  },
+  settings: {
+    checkInTime: 1518458400
+  },
+  days: [
+    {
+      date: '2018-02-12T17:32:18.116Z',
+      checked: false,
+      tasks: [
+        Array
+      ]
+    },
+    {
+      date: 2018-02-16T04
+      :
+      07: 23.860Z,
+      checked: false,
+      tasks: [
+        Array
+      ]
+    }
+  ]
+}

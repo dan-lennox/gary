@@ -19,6 +19,7 @@
     "botbuilder-azure": "^3.0.4",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
+    "moment": "^2.21.0",
     "node-cron": "^1.2.1",
     "nodemon": "^1.12.5",
     "path": "^0.12.7",

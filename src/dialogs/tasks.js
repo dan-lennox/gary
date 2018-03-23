@@ -19,7 +19,7 @@ module.exports = (bot, builder) => {
       let today = new Date();
 
       if (!lastDay || lastDay.getDate().getDate() !== today.getDate()) {
-        // If the user hasn't set a task for today.
+        // If the user hasn't set a task for today or if this is their first time using the bot.
         builder.Prompts.text(session, 'Hi! What is the absolute most important thing you need to do today?');
 
       }
@@ -46,6 +46,8 @@ module.exports = (bot, builder) => {
       // Initialise a new 'Day'.
       let today = new Day();
 
+      let checkInTime = user.getCheckInTime();
+
       // Add the task to the day.
       today.addTask(taskName);
 
@@ -53,7 +55,7 @@ module.exports = (bot, builder) => {
       user.addDay(today);
 
       // @todo: fill in { this time }.
-      session.endDialog(`OK! So you\'ve got until this time tomorrow to complete the following: \n ${taskName}!`);
+      session.endDialog(`OK! So you\'ve got until ${checkInTime} tomorrow to complete the following: \n ${taskName}!`);
     }
   ]);
 
@@ -63,7 +65,7 @@ module.exports = (bot, builder) => {
   bot.dialog('processDailyTasks', (session, args, next) => {
 
     let user = new User(session.userData);
-    let checkInTime = user.getCheckInTime();
+    let checkInTime = user.getCheckInTimestamp();
 
     if (checkInTime) {
 

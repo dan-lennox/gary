@@ -10,6 +10,9 @@ const Task = require('./task.model');
 // ]
 // }
 
+// @todo: Refactor to remove the this._day property
+// use object destructuring as with the Task model.
+
 module.exports = class Day {
 
   constructor(day){

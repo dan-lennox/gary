@@ -2,6 +2,7 @@
 // Wrapper class for manipulating the userData object stored
 // on the bot session in a consistent way.
 const Day = require('./day.model');
+const moment = require('moment');
 
 module.exports = class User {
 
@@ -34,6 +35,10 @@ module.exports = class User {
   }
 
   getCheckInTime() {
+    return moment(this._user.settings.checkInTime*1000).format('h:mma');
+  }
+
+  getCheckInTimestamp() {
     return this._user.settings.checkInTime;
   }
 
