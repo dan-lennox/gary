@@ -1,6 +1,6 @@
 const User = require('../models/user.model');
 const Day = require('../models/day.model');
-const Task = require('../models/day.model');
+const Task = require('../models/task.model');
 
 module.exports = (bot, builder) => {
 
@@ -13,12 +13,12 @@ module.exports = (bot, builder) => {
       let user = new User(session.userData);
 
       // Store a date object representing the most recent 'Day' stored for the current user.
-      let lastDay = user.getMostRecentDay();
+      let mostRecentDay = user.getMostRecentDay();
 
       // Make note of the current date.
       let today = new Date();
 
-      if (!lastDay || lastDay.getDate().getDate() !== today.getDate()) {
+      if (!mostRecentDay || mostRecentDay.getDate().getDate() !== today.getDate()) {
         // If the user hasn't set a task for today or if this is their first time using the bot.
         builder.Prompts.text(session, 'What is the absolute MOST IMPORTANT thing you need to do today?');
 
@@ -45,15 +45,15 @@ module.exports = (bot, builder) => {
       let user = new User(session.userData);
 
       // Initialise a new 'Day'.
-      let today = new Day();
+      let tomorrow = new Day();
 
       let checkInTime = user.getCheckInTime();
 
       // Add the task to the day.
-      today.addTask(taskName);
+      tomorrow.addTask(taskName);
 
       // Add the day to the user.
-      user.addDay(today);
+      user.addDay(tomorrow);
 
       session.endDialog(`Excellent choice supreme leader ${user.getName()}. You have until ${checkInTime} tomorrow to complete the following: \n "${taskName}".`);
     }
@@ -67,29 +67,52 @@ module.exports = (bot, builder) => {
     let user = new User(session.userData);
     let checkInTime = user.getCheckInTimestamp();
 
-    if (checkInTime) {
+    // Don't check anything if the user hasn't even set their account settings yet.
+    if (!checkInTime) {
+      session.endDialog();
+      return;
+    }
 
-      // Retrieve the check in date from the userData store.
-      let checkInDate = new Date(checkInTime * 1000);
+    // Load the most recent Day.
+    let mostRecentDay = user.getMostRecentDay();
 
-      // Convert this to a checkin time (cull the non-time portions of the stored date).
-      let time = new Date();
-      time.setHours(checkInDate.getHours(), checkInDate.getMinutes(), 0);
+    // Debug.
+    // mostRecentDay.setChecked(false);
 
-      // Declare a Date object to represent the current time.
-      let currentTime = new Date();
+    // Don't check in with the user more than once.
+    if (!mostRecentDay || mostRecentDay.getChecked()) {
+      session.endDialog();
+      return;
+    }
 
-      // Load the most recent Day.
-      let yesterday = user.getMostRecentDay();
+    // Retrieve the check in date from the userData store.
+    let checkInTimeAsDate = new Date(checkInTime * 1000);
 
-      if (time < currentTime && !yesterday.getChecked()) { // && yesterday.checked = false
+    // Retrieve the date of the most recent dat.
+    let checkInDate = mostRecentDay.getDate();
 
-        // Record that the user's task for this day was already checked.
-        // We only want to prompt them once via cron to see if they have completed their task.
-        yesterday.setChecked();
+    // Combine the most recent day with the check in time to work out when the
+    // day's task's are due.
+    checkInDate.setHours(checkInTimeAsDate.getHours(), checkInTimeAsDate.getMinutes(), 0);
 
-        session.send('Hello, I\'m the survey dialog. I\'m interrupting your conversation to ask you a question. Type "done" to resume');
-      }
+    // Declare a Date object to represent the current time.
+    let currentTime = new Date();
+
+    //debugger;
+
+    // If the checkin time has passed.
+    // Debug.
+    //if (currentTime < checkInDate) {
+    if (currentTime > checkInDate) {
+      //debugger;
+
+      // Record that the user's task for this day was checked.
+      // We only want to prompt them once via cron to see if they have completed their task.
+      mostRecentDay.setChecked();
+
+      let currentTask = new Task(mostRecentDay.getTask()).getName();
+
+      session.send(`Greetings supreme leader ${user.getName()}. Your most import task yesterday was: "${currentTask}". Have you completed it yet?`);
     }
 
     session.endDialog();

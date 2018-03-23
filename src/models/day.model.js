@@ -18,8 +18,12 @@ module.exports = class Day {
   constructor(day){
 
     if (typeof day === 'undefined') {
+
+      // New day's should always be initialised to 'tomorrow'.
+      let date = new Date().setDate(new Date().getDate()+1);
+
       this._day = {
-        date: new Date(),
+        date: date,
         checked: false,
         tasks: []
       }
@@ -33,8 +37,8 @@ module.exports = class Day {
     return this._day;
   }
 
-  setChecked() {
-    this._day.checked = true;
+  setChecked(checked = true) {
+    this._day.checked = checked;
   }
 
   getDate() {
@@ -48,5 +52,9 @@ module.exports = class Day {
   addTask(name) {
     let task = new Task({ name });
     this._day.tasks.push(task.getTask());
+  }
+
+  getTask() {
+    return this._day.tasks[0];
   }
 };
