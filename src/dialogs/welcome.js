@@ -9,7 +9,7 @@ module.exports = (bot, builder) => {
     (session) => {
 
       if (!session.userData.profile.name) {
-        builder.Prompts.confirm(session, 'Hey there! I\'m Gary, my name is just a placeholder I\'m not all that smart yet. My job is to make sure you complete your most important task everyday! Are you ready to get started?');
+        builder.Prompts.confirm(session, `Greetings future dictator! In theory, if you complete your single MOST IMPORTANT task every single day, it should be a relatively trivial task to conquer and rule this weak and unfocussed planet! I will be your assistant in this matter. Are you ready to conquer your first nation?`);
       }
       else {
         session.endDialog();

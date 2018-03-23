@@ -27,7 +27,7 @@ module.exports = (bot, builder) => {
         session.endDialog();
       }
       else {
-        builder.Prompts.text(session, 'Awesome! What is your name?');
+        builder.Prompts.text(session, 'Excellent. What is your name?');
       }
     },
     (session, results) => {
@@ -48,7 +48,7 @@ module.exports = (bot, builder) => {
       else {
         let user = new User(session.userData);
 
-        builder.Prompts.time(session, `Hey ${user.getName()}! What time would you like me to check in on you each day? eg, 6pm`);
+        builder.Prompts.time(session, `Greetings supreme leader ${user.getName()}. By what time should your most important task be completed each day? eg, 6pm`);
         // @todo: Need validation to ensure it's just a time, not a full date.
         // @todo: NLP to check for o'clock, 6 (is it am or pm?) etc etc.
         // @todo: store time in userData ("userData stores information globally for the user across all conversations")
@@ -60,12 +60,15 @@ module.exports = (bot, builder) => {
       // Retrieve the checkin time inputed by the user (Let the botbuilder convert the response to
       // a javascript date object.
       let time = builder.EntityRecognizer.resolveTime([results.response]);
+
       // Save the check in time.
       user.setCheckInTime(time);
 
+      let displayTime = moment(time).format('h:mm a');
+
       // Let the user know the time is set.
-      // @todo: Replace helper function with moment js.
-      session.endDialog(`${moment(time).format('h:mm a')} it is! You better have it done by then or I'm taking away your streak! And that's it for setup, I'll be checking in on you tomorrow buddy!`);
+      session.endDialog(`${displayTime} it is. If you can complete your task by ${displayTime} tomorrow, you'll conquer your first country and be one step closer to ruling the world!`);
+      // It would be great to throw in a doctor evil gif at this point.
     }
   ]);
 

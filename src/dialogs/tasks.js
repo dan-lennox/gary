@@ -20,7 +20,7 @@ module.exports = (bot, builder) => {
 
       if (!lastDay || lastDay.getDate().getDate() !== today.getDate()) {
         // If the user hasn't set a task for today or if this is their first time using the bot.
-        builder.Prompts.text(session, 'Hi! What is the absolute most important thing you need to do today?');
+        builder.Prompts.text(session, 'What is the absolute MOST IMPORTANT thing you need to do today?');
 
       }
       else {
@@ -32,7 +32,8 @@ module.exports = (bot, builder) => {
         // @todo: At this point, if the user says anything, we just remind them of the task
         // they need to do by tomorrow.
         // session.endDialog(`You committed to getting ${taskName} done by ${time}`);
-        session.endDialog(`You already have a task today`);
+        session.endDialog(`You already have a task today.`);
+        // @todo: Add 'Would you like to change your task for today?'.
       }
     },
     (session, results) => {
@@ -54,8 +55,7 @@ module.exports = (bot, builder) => {
       // Add the day to the user.
       user.addDay(today);
 
-      // @todo: fill in { this time }.
-      session.endDialog(`OK! So you\'ve got until ${checkInTime} tomorrow to complete the following: \n ${taskName}!`);
+      session.endDialog(`Excellent choice supreme leader ${user.getName()}. You have until ${checkInTime} tomorrow to complete the following: \n "${taskName}".`);
     }
   ]);
 
