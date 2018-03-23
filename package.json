@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node ./src/app.js",
-    "dev": "nodemon ./src/app.js"
+    "dev": "nodemon --inspect ./src/app.js"
   },
   "author": "Daniel Lennox",
   "license": "ISC",
