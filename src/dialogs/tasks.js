@@ -73,7 +73,7 @@ module.exports = (bot, builder) => {
     let mostRecentDay = user.getMostRecentDay();
 
     // Debug.
-    //mostRecentDay.setChecked(false);
+    mostRecentDay.setChecked(false);
 
     // Don't check in with the user more than once.
     if (!mostRecentDay || mostRecentDay.getChecked()) {
@@ -96,13 +96,16 @@ module.exports = (bot, builder) => {
 
     // If the checkin time has passed.
     // Debug.
-    //if (currentTime < checkInDate) {
-    if (currentTime > checkInDate) {
+    if (currentTime < checkInDate) {
+    //if (currentTime > checkInDate) {
 
       // Record that the user's task for this day was checked.
       // We only want to prompt them once via cron to see if they have completed their task.
       mostRecentDay.setChecked();
 
+
+      // @toto: I should be able to pass arguments here, so I don't have to reload the most
+      // recent day etc.
       session.beginDialog('checkIn');
     }
     else {
@@ -110,19 +113,28 @@ module.exports = (bot, builder) => {
     }
   });
 
-  /**
-   *
-   */
-  bot.dialog('checkIn', (session, args, next) => {
-    let user = new User(session.userData);
+  bot.dialog('checkIn', [
+    (session) => {
+      //debugger;
+      let user = new User(session.userData);
 
-    // Load the most recent Day.
-    let mostRecentDay = user.getMostRecentDay();
+      // Load the most recent Day.
+      let mostRecentDay = user.getMostRecentDay();
 
-    let currentTask = mostRecentDay.getTask().getName();
+      let currentTask = mostRecentDay.getTask().getName();
 
-    session.send(`WORKING Greetings supreme leader ${user.getName()}. Your most import task yesterday was: "${currentTask}". Have you completed it yet?`);
-    session.endDialog();
-  });
+      builder.Prompts.confirm(session, `WORKING Greetings supreme leader ${user.getName()}. Your most import task yesterday was: "${currentTask}". Have you completed it yet?`);
+    },
+    (session, results) => {
+      if (results.response) {
+        session.send('You said yes');
+        //session.endConversation("OK I'll leave you alone to continue your procrastinating ways.")
+      }
+      else {
+        session.send('You said no');
+        //session.endConversation("OK I'll leave you alone to continue your procrastinating ways.")
+      }
+    }
+  ]);
 
 };
