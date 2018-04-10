@@ -1,24 +1,26 @@
 module.exports = class Task {
 
-  constructor({ name, completed }){
+  constructor(task) {
 
-    this._name = name;
-    this._completed = (typeof completed !== 'undefined') ? completed : false;
+
+    // this._name = name;
+    // this._completed = (typeof completed !== 'undefined') ? completed : false;
+    this._task = task;
   }
 
   getCompleted() {
-    return this._completed;
+    return this._task.completed;
   }
 
   setCompleted() {
-    this._.completed = true;
+    this._task.completed = true;
   }
 
   getName() {
-    return this._name;
+    return this._task.name;
   }
 
   getTask() {
-    return { name: this._name, completed: this._completed };
+    return this._task;
   }
 };

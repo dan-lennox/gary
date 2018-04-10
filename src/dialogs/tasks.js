@@ -28,8 +28,9 @@ module.exports = (bot, builder) => {
         // @todo: At this point, if the user says anything, we just remind them of the task
         // they need to do by tomorrow.
         // session.endDialog(`You committed to getting ${taskName} done by ${time}`);
-        session.endDialog(`You already have a task today.`);
+        //session.endDialog(`You already have a task today.`);
         // @todo: Add 'Would you like to change your task for today?'.
+        session.beginDialog('checkIn');
       }
     },
     (session, results) => {
@@ -73,7 +74,7 @@ module.exports = (bot, builder) => {
     let mostRecentDay = user.getMostRecentDay();
 
     // Debug.
-    mostRecentDay.setChecked(false);
+    //mostRecentDay.setChecked(false);
 
     // Don't check in with the user more than once.
     if (!mostRecentDay || mostRecentDay.getChecked()) {
@@ -96,8 +97,8 @@ module.exports = (bot, builder) => {
 
     // If the checkin time has passed.
     // Debug.
-    if (currentTime < checkInDate) {
-    //if (currentTime > checkInDate) {
+    //if (currentTime < checkInDate) {
+    if (currentTime > checkInDate) {
 
       // Record that the user's task for this day was checked.
       // We only want to prompt them once via cron to see if they have completed their task.
@@ -121,18 +122,50 @@ module.exports = (bot, builder) => {
       // Load the most recent Day.
       let mostRecentDay = user.getMostRecentDay();
 
-      let currentTask = mostRecentDay.getTask().getName();
+      let currentTask = mostRecentDay.getTask();
 
-      builder.Prompts.confirm(session, `WORKING Greetings supreme leader ${user.getName()}. Your most import task yesterday was: "${currentTask}". Have you completed it yet?`);
+      if (currentTask.getCompleted()) {
+        let checkInTime = user.getCheckInTime();
+        session.endConversation(`You have already completed your task for today. I'll check back in at ${checkInTime} for a new task.`)
+      }
+      else {
+        builder.Prompts.confirm(session, `Greetings supreme leader ${user.getName()}. Your most import task yesterday was: "${currentTask.getName()}". Have you completed it yet?`);
+      }
     },
     (session, results) => {
       if (results.response) {
-        session.send('You said yes');
-        //session.endConversation("OK I'll leave you alone to continue your procrastinating ways.")
+
+
+        let user = new User(session.userData);
+        let mostRecentDay = user.getMostRecentDay();
+        let currentTask = mostRecentDay.getTask();
+
+        session.send("Excellent! I'm pleased to report that Thailand has fallen under our control. You empire has now grown to 24 countries");
+        console.log('before', currentTask);
+        currentTask.setCompleted();
+        console.log('after', currentTask);
+        console.log('session after', session.userData);
+        session.beginDialog('today');
       }
       else {
-        session.send('You said no');
-        //session.endConversation("OK I'll leave you alone to continue your procrastinating ways.")
+
+        // Load the most recent Day.
+        let user = new User(session.userData);
+        let mostRecentDay = user.getMostRecentDay();
+
+        // If this 'checkIn' was simply from user interaction, not from the 'end of day Check In'.
+        if (!mostRecentDay.getChecked()) {
+          session.endConversation("OK I'll leave you alone to continue your procrastinating ways.")
+        }
+        else {
+
+          // Else, this was the 'end of day' checkIn,
+          // - You should have done your task!!
+          // - Go to "new day" dialog flow.
+          session.send('Unfortunate... I am ashamed to report that Lithuania successfully rebelled. Your empire now only has 23 countries.');
+          session.send('We shall try again tomorrow.');
+          session.beginDialog('today');
+        }
       }
     }
   ]);
