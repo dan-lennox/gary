@@ -95,7 +95,11 @@ module.exports = (bot, builder) => {
     checkInDate.setHours(checkInTimeAsDate.getHours(), checkInTimeAsDate.getMinutes(), 0);
 
     // Declare a Date object to represent the current time.
+    // @todo: Current time needs to be converted to the current user's timezone right?
     let currentTime = new Date();
+
+    console.log('currentTime', currentTime);
+    console.log('check in date', checkInDate);
 
     // Store a boolean to indicate if the check in time has now passed.
     let checkInTimePassed = currentTime > checkInDate;
