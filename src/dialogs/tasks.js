@@ -87,8 +87,10 @@ module.exports = (bot, builder) => {
       return;
     }
 
-    // Retrieve the date of the most recent dat.
+    // Retrieve the date of the most recent date.
     let checkInDate = mostRecentDay.getDate();
+
+    console.log('check in date before manipulation', checkInDate);
 
     // Combine the most recent day with the check in time to work out when the
     // day's task's are due.
