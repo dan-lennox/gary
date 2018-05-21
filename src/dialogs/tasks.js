@@ -15,6 +15,8 @@ module.exports = (bot, builder) => {
       // Load the most recent day created for this user.
       let mostRecentDay = user.getMostRecentDay();
 
+      // Debug
+      //if (mostRecentDay || new Date() > mostRecentDay.getDate()) {
       if (!mostRecentDay || new Date() > mostRecentDay.getDate()) {
         // If the user hasn't set a task for today or if this is their first time using the bot.
         builder.Prompts.text(session, 'What is the absolute MOST IMPORTANT thing you need to do today?');
@@ -70,6 +72,9 @@ module.exports = (bot, builder) => {
       return;
     }
 
+    // Retrieve the check in date from the userData store.
+    let checkInTimeAsDate = new Date(checkInTime * 1000);
+
     // Load the most recent Day.
     let mostRecentDay = user.getMostRecentDay();
 
@@ -82,9 +87,6 @@ module.exports = (bot, builder) => {
       return;
     }
 
-    // Retrieve the check in date from the userData store.
-    let checkInTimeAsDate = new Date(checkInTime * 1000);
-
     // Retrieve the date of the most recent dat.
     let checkInDate = mostRecentDay.getDate();
 
@@ -95,10 +97,13 @@ module.exports = (bot, builder) => {
     // Declare a Date object to represent the current time.
     let currentTime = new Date();
 
+    // Store a boolean to indicate if the check in time has now passed.
+    let checkInTimePassed = currentTime > checkInDate;
+
     // If the checkin time has passed.
     // Debug.
-    //if (currentTime < checkInDate) {
-    if (currentTime > checkInDate) {
+    //checkInTimePassed = true;
+    if (checkInTimePassed) {
 
       // Record that the user's task for this day was checked.
       // We only want to prompt them once via cron to see if they have completed their task.

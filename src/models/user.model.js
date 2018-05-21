@@ -50,6 +50,10 @@ module.exports = class User {
     this._user.days.push(day.getDay());
   }
 
+  getDays() {
+    return this._user.days;
+  }
+
   getMostRecentDay() {
     return (this._user.days.length > 0) ? new Day(this._user.days[this._user.days.length - 1]) : null;
   }
