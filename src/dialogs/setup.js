@@ -58,7 +58,7 @@ module.exports = (bot, builder) => {
       let user = new User(session.userData);
 
       // Retrieve the checkin time inputed by the user (Let the botbuilder convert the response to
-      // a javascript date object.
+      // a javascript date object).
       let time = builder.EntityRecognizer.resolveTime([results.response]);
 
       // Save the check in time.

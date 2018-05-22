@@ -15,9 +15,9 @@ module.exports = (bot, builder) => {
       // Load the most recent day created for this user.
       let mostRecentDay = user.getMostRecentDay();
 
-      // Debug
-      //if (mostRecentDay || new Date() > mostRecentDay.getDate()) {
-      if (!mostRecentDay || new Date() > mostRecentDay.getDate()) {
+      let today = new Date();
+
+      if (!mostRecentDay || today.getDate() > mostRecentDay.getDateObject().getDate()) {
         // If the user hasn't set a task for today or if this is their first time using the bot.
         builder.Prompts.text(session, 'What is the absolute MOST IMPORTANT thing you need to do today?');
       }
@@ -44,15 +44,15 @@ module.exports = (bot, builder) => {
       let user = new User(session.userData);
 
       // Initialise a new 'Day'.
-      let tomorrow = new Day();
+      let today = new Day();
 
       let checkInTime = user.getCheckInTime();
 
       // Add the task to the day.
-      tomorrow.addTask(taskName);
+      today.addTask(taskName);
 
       // Add the day to the user.
-      user.addDay(tomorrow);
+      user.addDay(today);
 
       session.endDialog(`Excellent choice supreme leader ${user.getName()}. You have until ${checkInTime} tomorrow to complete the following: \n "${taskName}".`);
     }
@@ -88,37 +88,37 @@ module.exports = (bot, builder) => {
     }
 
     // Retrieve the date of the most recent date.
-    let checkInDate = mostRecentDay.getDate();
-
-    console.log('check in date before manipulation', checkInDate);
+    let checkInDate = mostRecentDay.getDateObject();
 
     // Combine the most recent day with the check in time to work out when the
     // day's task's are due.
     checkInDate.setHours(checkInTimeAsDate.getHours(), checkInTimeAsDate.getMinutes(), 0);
 
     // Declare a Date object to represent the current time.
-    // @todo: Current time needs to be converted to the current user's timezone right?
-    let currentTime = new Date();
+    let today = new Date();
 
-    console.log('currentTime', currentTime);
+    console.log('currentTime', today);
     console.log('check in date', checkInDate);
 
-    // Store a boolean to indicate if the check in time has now passed.
-    let checkInTimePassed = currentTime > checkInDate;
-
     // If the checkin time has passed.
-    // Debug.
-    //checkInTimePassed = true;
-    if (checkInTimePassed) {
+    if (today > checkInDate) {
 
       // Record that the user's task for this day was checked.
       // We only want to prompt them once via cron to see if they have completed their task.
       mostRecentDay.setChecked();
 
-
-      // @toto: I should be able to pass arguments here, so I don't have to reload the most
-      // recent day etc.
-      session.beginDialog('checkIn');
+      // If the user already marked their task as completed (without waiting until the end of
+      // the day for the prompt) then, on the start of a new day, we can simply push straight
+      // through to the 'today' dialog and ask for today's new task.
+      if (mostRecentDay.getTask().getCompleted()) {
+        // @todo: We should pass a bespoke message. Eg, Well done yesterday! What's your most important...
+        session.beginDialog('today');
+      }
+      else {
+        // @toto: I should be able to pass arguments here, so I don't have to reload the most
+        // recent day etc.
+        session.beginDialog('checkIn');
+      }
     }
     else {
       session.endDialog();

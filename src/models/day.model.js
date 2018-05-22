@@ -19,8 +19,7 @@ module.exports = class Day {
 
     if (typeof day === 'undefined') {
 
-      // New day's should always be initialised to 'tomorrow'.
-      let date = new Date().setDate(new Date().getDate()+1);
+      let date = new Date().setDate(new Date().getDate());
 
       this._day = {
         date: date,
@@ -41,7 +40,7 @@ module.exports = class Day {
     this._day.checked = checked;
   }
 
-  getDate() {
+  getDateObject() {
     return new Date(this._day.date);
   }
 
