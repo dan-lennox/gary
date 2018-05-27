@@ -64,6 +64,17 @@ module.exports = (bot, builder) => {
       // Save the check in time.
       user.setCheckInTime(time);
 
+      // @todo: We also need to store the user's timezone!!
+      // @todo: WORST CASE: we can convert the time to the system timezone.
+      console.log('time entered', time);
+      console.log('full time request response', results.response);
+      console.log('entire session', session.message.localTimestamp);
+
+      let test = new Date(session.message.localTimestamp);
+
+      //SWITCH THE SIGNS. 300 is actually -300 (so -5 Merida).
+      console.log('timezone offset', test.getTimezoneOffset());
+
       let displayTime = moment(time).format('h:mm a');
 
       // Let the user know the time is set.
