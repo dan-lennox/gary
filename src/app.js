@@ -14,6 +14,7 @@ require('dotenv').config({path: path.join(__dirname, '../.env')});
 const express = require('express');
 const builder = require('botbuilder');
 const azureBot = require('botbuilder-azure');
+const facebook = require('botbuilder-facebookextension');
 
 // Custom dependencies.
 const cron = require('./cron');
@@ -37,6 +38,15 @@ let connector = new builder.ChatConnector({
 
 // Initialise the bot using the defined bot connector and storage option.
 let bot = new builder.UniversalBot(connector).set('storage', tableStorage);
+
+if (process.env.FACEBOOK_PAGE_ACCESS_TOKEN) {
+  bot.use(
+    facebook.RetrieveUserProfile({
+      accessToken: process.env.FACEBOOK_PAGE_ACCESS_TOKEN,
+      fields: ['localise', 'timezone'] // OPTIONAL
+    })
+  );
+}
 
 // Make sure the bot knows where to look for our Botbuilder.json file which contains default message
 // overrides.

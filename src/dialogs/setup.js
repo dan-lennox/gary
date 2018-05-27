@@ -66,14 +66,14 @@ module.exports = (bot, builder) => {
 
       // @todo: We also need to store the user's timezone!!
       // @todo: WORST CASE: we can convert the time to the system timezone.
-      console.log('time entered', time);
-      console.log('full time request response', results.response);
-      console.log('session message', session.message);
+      //console.log('time entered', time);
+      //console.log('full time request response', results.response);
+      console.log('User Data', session.userData);
 
-      let test = new Date(session.message.localTimestamp);
+      //let test = new Date(session.message.localTimestamp);
 
       //SWITCH THE SIGNS. 300 is actually -300 (so -5 Merida).
-      console.log('timezone offset', test.getTimezoneOffset());
+      //console.log('timezone offset', test.getTimezoneOffset());
 
       let displayTime = moment(time).format('h:mm a');
 
