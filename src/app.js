@@ -43,7 +43,7 @@ if (process.env.FACEBOOK_PAGE_ACCESS_TOKEN) {
   bot.use(
     facebook.RetrieveUserProfile({
       accessToken: process.env.FACEBOOK_PAGE_ACCESS_TOKEN,
-      fields: ['localise', 'timezone'] // OPTIONAL
+      fields: ['locale', 'timezone'] // OPTIONAL
     })
   );
 }
