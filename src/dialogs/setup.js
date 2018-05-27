@@ -68,7 +68,7 @@ module.exports = (bot, builder) => {
       // @todo: WORST CASE: we can convert the time to the system timezone.
       console.log('time entered', time);
       console.log('full time request response', results.response);
-      console.log('entire session', session.message.localTimestamp);
+      console.log('session message', session.message);
 
       let test = new Date(session.message.localTimestamp);
 
