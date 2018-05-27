@@ -14,9 +14,9 @@
   "author": "Daniel Lennox",
   "license": "ISC",
   "dependencies": {
-    "azure-storage": "^2.6.0",
-    "botbuilder": "^3.12.0",
-    "botbuilder-azure": "^3.0.4",
+    "azure-storage": "^2.8.3",
+    "botbuilder": "^3.15.0",
+    "botbuilder-azure": "^3.15.0",
     "dotenv": "^4.0.0",
     "express": "^4.16.2",
     "moment": "^2.21.0",
