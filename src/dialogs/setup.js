@@ -64,16 +64,15 @@ module.exports = (bot, builder) => {
       // Save the check in time.
       user.setCheckInTime(time);
 
-      // @todo: We also need to store the user's timezone!!
-      // @todo: WORST CASE: we can convert the time to the system timezone.
-      //console.log('time entered', time);
-      //console.log('full time request response', results.response);
       console.log('User Data', session.userData);
 
-      //let test = new Date(session.message.localTimestamp);
-
-      //SWITCH THE SIGNS. 300 is actually -300 (so -5 Merida).
-      //console.log('timezone offset', test.getTimezoneOffset());
+      // If a timezone hasn't been set by any middleware, such as botbuilder-facebookextension
+      // then check to see if a 'localTimestamp' was attached to the message by the channel and
+      // use this to save the timezone value instead.
+      if (!session.userData.timezone && session.message.localTimestamp) {
+        let local = new Date(session.message.localTimestamp).getTimezoneOffset();
+        session.userData.timezone = -local/60;
+      }
 
       let displayTime = moment(time).format('h:mm a');
 

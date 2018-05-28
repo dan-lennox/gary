@@ -39,6 +39,9 @@ module.exports = class User {
   }
 
   getCheckInTimestamp() {
+
+    console.log('user object when getting checkin time', this._user);
+
     return this._user.settings.checkInTime;
   }
 
