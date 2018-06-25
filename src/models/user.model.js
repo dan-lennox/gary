@@ -39,10 +39,11 @@ module.exports = class User {
   }
 
   getCheckInTimestamp() {
-
-    console.log('user object when getting checkin time', this._user);
-
     return this._user.settings.checkInTime;
+  }
+
+  getTimezoneOffset() {
+    return this._user.timezone;
   }
 
   getUser() {
