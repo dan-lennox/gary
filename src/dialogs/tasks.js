@@ -1,6 +1,7 @@
 const User = require('../models/user.model');
 const Day = require('../models/day.model');
 const Task = require('../models/task.model');
+const moment = require('moment');
 
 module.exports = (bot, builder) => {
 
@@ -72,14 +73,11 @@ module.exports = (bot, builder) => {
       return;
     }
 
-    // Retrieve the check in date from the userData store.
-    let checkInTimeAsDate = new Date(checkInTime * 1000);
-
     // Load the most recent Day.
     let mostRecentDay = user.getMostRecentDay();
 
     // Debug.
-    //mostRecentDay.setChecked(false);
+    // mostRecentDay.setChecked(false);
 
     // Don't check in with the user more than once.
     if (!mostRecentDay || mostRecentDay.getChecked()) {
@@ -87,18 +85,24 @@ module.exports = (bot, builder) => {
       return;
     }
 
-    // Retrieve the date of the most recent date.
-    let checkInDate = mostRecentDay.getDateObject();
+    // Retrieve the date of the most recent day.
+    let checkInDate = moment(mostRecentDay.getDateObject()).add(1, 'days').utcOffset(user.getTimezoneOffset());
 
-    // Combine the most recent day with the check in time to work out when the
+    // Retrieve the check in time from the userData store.
+    let checkInTimeAsDate = new Date(checkInTime * 1000);
+
+    // Combine the most recent day with the general Check In Time to work out when the
     // day's task's are due.
-    checkInDate.setHours(checkInTimeAsDate.getHours(), checkInTimeAsDate.getMinutes(), 0);
+    checkInDate.hour(checkInTimeAsDate.getHours());
+    checkInDate.minute(checkInTimeAsDate.getMinutes());
 
     // Declare a Date object to represent the current time.
-    let today = new Date();
+    let today = moment().utcOffset(user.getTimezoneOffset());
 
+    // Check debugging.
     console.log('currentTime', today);
     console.log('check in date', checkInDate);
+    console.log('today is later than checkin time', (today > checkInDate));
 
     // If the checkin time has passed.
     if (today > checkInDate) {
