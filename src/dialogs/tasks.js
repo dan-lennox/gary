@@ -18,7 +18,7 @@ module.exports = (bot, builder) => {
 
       let today = new Date();
 
-      if (!mostRecentDay || today.getDate() > mostRecentDay.getDateObject().getDate()) {
+      if (!mostRecentDay || (today.getDate() > mostRecentDay.getDateObject().getDate())) {
         // If the user hasn't set a task for today or if this is their first time using the bot.
         builder.Prompts.text(session, 'What is the absolute MOST IMPORTANT thing you need to do today?');
       }
@@ -70,7 +70,6 @@ module.exports = (bot, builder) => {
     // Don't check anything if the user hasn't even set their account settings yet.
     if (!checkInTime) {
       session.endDialog();
-      return;
     }
 
     // Load the most recent Day.
@@ -82,7 +81,6 @@ module.exports = (bot, builder) => {
     // Don't check in with the user more than once.
     if (!mostRecentDay || mostRecentDay.getChecked()) {
       session.endDialog();
-      return;
     }
 
     // Retrieve the date of the most recent day.

@@ -12,5 +12,5 @@ module.exports = {
       processDailyTasks(bot);
     });
   }
-}
+};
 
