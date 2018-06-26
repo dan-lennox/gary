@@ -112,13 +112,19 @@ module.exports = (bot, builder) => {
       let user = new User(session.userData);
 
       // Load the most recent Day.
+      // Load the most recent Day.
       let mostRecentDay = user.getMostRecentDay();
 
       let currentTask = mostRecentDay.getTask();
 
       if (currentTask.getCompleted()) {
-        let checkInTime = user.getCheckInTime();
-        session.endConversation(`You have already completed your task for today. I'll check back in at ${checkInTime} for a new task.`)
+        if (user.checkInTimePassed()) {
+          session.beginDialog('today');
+        }
+        else {
+          let checkInTime = user.getCheckInTime();
+          session.endConversation(`You have already completed your task for today. I'll check back in at ${checkInTime} for a new task.`)
+        }
       }
       else {
         builder.Prompts.confirm(session, `Greetings supreme leader ${user.getName()}. Your most import task yesterday was: "${currentTask.getName()}". Have you completed it yet?`);
@@ -156,7 +162,10 @@ module.exports = (bot, builder) => {
           // - Go to "new day" dialog flow.
           session.send('Unfortunate... I am ashamed to report that Lithuania successfully rebelled. Your empire now only has 23 countries.');
           session.send('We shall try again tomorrow.');
-          session.beginDialog('today');
+
+          if (user.checkInTimePassed()) {
+            session.beginDialog('today');
+          }
         }
       }
     }
