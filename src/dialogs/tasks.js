@@ -67,63 +67,64 @@ module.exports = (bot, builder) => {
     let user = new User(session.userData);
     let checkInTime = user.getCheckInTimestamp();
 
-    // Don't check anything if the user hasn't even set their account settings yet.
-    if (!checkInTime) {
-      session.endDialog();
-    }
-
     // Load the most recent Day.
     let mostRecentDay = user.getMostRecentDay();
 
-    // Debug.
+    // Debug (Allow multiple checks per day).
     // mostRecentDay.setChecked(false);
 
+    // Don't check anything if the user hasn't even set their account settings yet.
     // Don't check in with the user more than once.
-    if (!mostRecentDay || mostRecentDay.getChecked()) {
+    if (!checkInTime || !mostRecentDay || mostRecentDay.getChecked()) {
       session.endDialog();
-    }
-
-    // Retrieve the date of the most recent day.
-    let checkInDate = moment(mostRecentDay.getDateObject()).add(1, 'days').utcOffset(user.getTimezoneOffset());
-
-    // Retrieve the check in time from the userData store.
-    let checkInTimeAsDate = new Date(checkInTime * 1000);
-
-    // Combine the most recent day with the general Check In Time to work out when the
-    // day's task's are due.
-    checkInDate.hour(checkInTimeAsDate.getHours());
-    checkInDate.minute(checkInTimeAsDate.getMinutes());
-
-    // Declare a Date object to represent the current time.
-    let today = moment().utcOffset(user.getTimezoneOffset());
-
-    // Check debugging.
-    console.log('currentTime', today);
-    console.log('check in date', checkInDate);
-    console.log('today is later than checkin time', (today > checkInDate));
-
-    // If the checkin time has passed.
-    if (today > checkInDate) {
-
-      // Record that the user's task for this day was checked.
-      // We only want to prompt them once via cron to see if they have completed their task.
-      mostRecentDay.setChecked();
-
-      // If the user already marked their task as completed (without waiting until the end of
-      // the day for the prompt) then, on the start of a new day, we can simply push straight
-      // through to the 'today' dialog and ask for today's new task.
-      if (mostRecentDay.getTask().getCompleted()) {
-        // @todo: We should pass a bespoke message. Eg, Well done yesterday! What's your most important...
-        session.beginDialog('today');
-      }
-      else {
-        // @toto: I should be able to pass arguments here, so I don't have to reload the most
-        // recent day etc.
-        session.beginDialog('checkIn');
-      }
     }
     else {
-      session.endDialog();
+
+      // Retrieve the date of the most recent day.
+      let checkInDate = moment(mostRecentDay.getDateObject()).add(1, 'days').utcOffset(user.getTimezoneOffset());
+
+      // Debug (Make tomorrow into today).
+      //let checkInDate = moment(mostRecentDay.getDateObject()).utcOffset(user.getTimezoneOffset());
+
+      // Retrieve the check in time from the userData store.
+      let checkInTimeAsDate = new Date(checkInTime * 1000);
+
+      // Combine the most recent day with the general Check In Time to work out when the
+      // day's task's are due.
+      checkInDate.hour(checkInTimeAsDate.getHours());
+      checkInDate.minute(checkInTimeAsDate.getMinutes());
+
+      // Declare a Date object to represent the current time.
+      let today = moment().utcOffset(user.getTimezoneOffset());
+
+      // Check debugging.
+      console.log('currentTime', today);
+      console.log('check in date', checkInDate);
+      console.log('today is later than checkin time', (today > checkInDate));
+
+      // If the checkin time has passed.
+      if (today > checkInDate) {
+
+        // Record that the user's task for this day was checked.
+        // We only want to prompt them once via cron to see if they have completed their task.
+        mostRecentDay.setChecked();
+
+        // If the user already marked their task as completed (without waiting until the end of
+        // the day for the prompt) then, on the start of a new day, we can simply push straight
+        // through to the 'today' dialog and ask for today's new task.
+        if (mostRecentDay.getTask().getCompleted()) {
+          // @todo: We should pass a bespoke message. Eg, Well done yesterday! What's your most important...
+          session.beginDialog('today');
+        }
+        else {
+          // @toto: I should be able to pass arguments here, so I don't have to reload the most
+          // recent day etc.
+          session.beginDialog('checkIn');
+        }
+      }
+      else {
+        session.endDialog();
+      }
     }
   });
 
