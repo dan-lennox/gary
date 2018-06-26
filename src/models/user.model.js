@@ -61,4 +61,34 @@ module.exports = class User {
   getMostRecentDay() {
     return (this._user.days.length > 0) ? new Day(this._user.days[this._user.days.length - 1]) : null;
   }
+
+  checkInTimePassed() {
+
+    let timeZoneOffset = this.getTimezoneOffset();
+
+    // Retrieve the date of the most recent day.
+    let checkInDate = moment(this.getMostRecentDay().getDateObject()).add(1, 'days').utcOffset(timeZoneOffset);
+
+    // Debug (Make tomorrow into today).
+    //let checkInDate = moment(this.getMostRecentDay().getDateObject()).utcOffset(timeZoneOffset);
+
+    // Retrieve the check in time from the userData store.
+    let checkInTimeAsDate = new Date(this.getCheckInTimestamp() * 1000);
+
+    // Combine the most recent day with the general Check In Time to work out when the
+    // day's task's are due.
+    checkInDate.hour(checkInTimeAsDate.getHours());
+    checkInDate.minute(checkInTimeAsDate.getMinutes());
+
+    // Declare a Date object to represent the current time.
+    let today = moment().utcOffset(timeZoneOffset);
+
+    // Check debugging.
+    console.log('currentTime', today);
+    console.log('check in date', checkInDate);
+    console.log('today is later than checkin time', (today > checkInDate));
+
+    return (today > checkInDate);
+  }
+
 };

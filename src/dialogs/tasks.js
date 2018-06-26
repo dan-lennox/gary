@@ -80,30 +80,8 @@ module.exports = (bot, builder) => {
     }
     else {
 
-      // Retrieve the date of the most recent day.
-      let checkInDate = moment(mostRecentDay.getDateObject()).add(1, 'days').utcOffset(user.getTimezoneOffset());
-
-      // Debug (Make tomorrow into today).
-      //let checkInDate = moment(mostRecentDay.getDateObject()).utcOffset(user.getTimezoneOffset());
-
-      // Retrieve the check in time from the userData store.
-      let checkInTimeAsDate = new Date(checkInTime * 1000);
-
-      // Combine the most recent day with the general Check In Time to work out when the
-      // day's task's are due.
-      checkInDate.hour(checkInTimeAsDate.getHours());
-      checkInDate.minute(checkInTimeAsDate.getMinutes());
-
-      // Declare a Date object to represent the current time.
-      let today = moment().utcOffset(user.getTimezoneOffset());
-
-      // Check debugging.
-      console.log('currentTime', today);
-      console.log('check in date', checkInDate);
-      console.log('today is later than checkin time', (today > checkInDate));
-
       // If the checkin time has passed.
-      if (today > checkInDate) {
+      if (user.checkInTimePassed()) {
 
         // Record that the user's task for this day was checked.
         // We only want to prompt them once via cron to see if they have completed their task.
