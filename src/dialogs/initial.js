@@ -15,6 +15,8 @@ module.exports = (bot, builder) => {
     [
       (session) => {
 
+        console.log('session in initial dialog', session);
+
         if (!session.userData.profile || args.resetUser) {;
           // Initialise an empty user profile object if one does not yet exist for the current user.
           session.userData.profile = {};
