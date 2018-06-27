@@ -15,7 +15,12 @@ module.exports = (bot, builder) => {
     [
       (session) => {
 
-        console.log('session in initial dialog', session);
+        if (!session.userData.platform || args.resetUser) {
+          session.userData.platform = {
+            'name': session.message.source,
+            'id': session.message.user.id
+          }
+        }
 
         if (!session.userData.profile || args.resetUser) {;
           // Initialise an empty user profile object if one does not yet exist for the current user.
@@ -41,6 +46,8 @@ module.exports = (bot, builder) => {
         );
       },
       (session) => {
+
+        console.log('session in initial dialog', session);
 
         // Begin the Setup dialog.
         session.beginDialog('setup');
