@@ -32,6 +32,8 @@ module.exports = (bot, builder) => {
           session.userData.settings = {};
         }
 
+        console.log('session in initial dialog', session);
+
         let address = new addressModel();
 
         address.create(session.message.address).subscribe(
@@ -46,8 +48,6 @@ module.exports = (bot, builder) => {
         );
       },
       (session) => {
-
-        console.log('session in initial dialog', session);
 
         // Begin the Setup dialog.
         session.beginDialog('setup');
