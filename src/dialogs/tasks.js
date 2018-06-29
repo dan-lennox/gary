@@ -151,9 +151,11 @@ module.exports = (bot, builder) => {
             userCountries.addCountry(country);
             userCountries.getList()
               .then((list) => {
+
+                // Save the updated list of countries to the user.
                 user.setCountries(list);
 
-                // Let the user know about their new conquest!c
+                // Let the user know about their new conquest!
                 session.send(`Excellent! I'm pleased to report that ${country.Name} has fallen under our control. You empire has now grown to ${user.getCountries().length} countries`);
 
                 // Set the current task for for yesterday as completed.
@@ -176,15 +178,22 @@ module.exports = (bot, builder) => {
         }
         else {
 
-          // Else, this was the 'end of day' checkIn,
-          // - You should have done your task!!
-          // - Go to "new day" dialog flow.
-          session.send('Unfortunate... I am ashamed to report that Lithuania successfully rebelled. Your empire now only has 23 countries.');
-          session.send('We shall try again tomorrow.');
+          // Remove a country from the empire!
+          let userCountries = new CountriesList(user.getCountries());
+          userCountries.removeRandom()
+            .then(({country, list}) => {
 
-          if (user.checkInTimePassed()) {
-            session.beginDialog('today');
-          }
+              // Save the updated list of countries to the user.
+              user.setCountries(list);
+
+              // Let the user know about their recent failure!
+              session.send(`This is unfortunate... I am ashamed to report that ${country.Name} successfully rebelled. Your empire now only has ${user.getCountries().length} countries.`);
+              session.send('We shall try again tomorrow.');
+
+              if (user.checkInTimePassed()) {
+                session.beginDialog('today');
+              }
+            });
         }
       }
     }

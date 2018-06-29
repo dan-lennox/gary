@@ -54,6 +54,9 @@ module.exports = class CountriesList {
 
   async removeRandom() {
     await this.loadAll();
-    return this.countries.splice(_.random(this.countries.length - 1), 1)[0];
+    return {
+      country: this.countries.splice(_.random(this.countries.length - 1), 1)[0],
+      list: this.countries,
+    };
   }
 };
