@@ -2,6 +2,7 @@ const User = require('../models/user.model');
 const Day = require('../models/day.model');
 const Task = require('../models/task.model');
 const moment = require('moment');
+const CountriesList = require('../models/countriesList.model');
 
 module.exports = (bot, builder) => {
 
@@ -138,12 +139,30 @@ module.exports = (bot, builder) => {
         let mostRecentDay = user.getMostRecentDay();
         let currentTask = mostRecentDay.getTask();
 
-        session.send("Excellent! I'm pleased to report that Thailand has fallen under our control. You empire has now grown to 24 countries");
-        console.log('before', currentTask);
-        currentTask.setCompleted();
-        console.log('after', currentTask);
-        console.log('session after', session.userData);
-        session.beginDialog('today');
+
+        let countries = new CountriesList();
+
+        // Retrieve a random country that the user has not yet conquered.
+        countries.getRandom(user.getCountries())
+          .then((country) => {
+
+            // Add a new country to the empire.
+            let userCountries = new CountriesList(user.getCountries());
+            userCountries.addCountry(country);
+            userCountries.getList()
+              .then((list) => {
+                user.setCountries(list);
+
+                // Let the user know about their new conquest!c
+                session.send(`Excellent! I'm pleased to report that ${country.Name} has fallen under our control. You empire has now grown to ${user.getCountries().length} countries`);
+
+                // Set the current task for for yesterday as completed.
+                currentTask.setCompleted();
+
+                // Start a new day!
+                session.beginDialog('today');
+              });
+          });
       }
       else {
 
