@@ -27,6 +27,17 @@ module.exports = (bot, builder) => {
           session.userData.profile = {};
         }
 
+        if (!session.userData.countries || args.resetUser) {;
+          // Initialise an empty user countries array if one does not yet exist for the current user.
+          session.userData.countries = [];
+
+          // Debug a user with existing countries.
+          // session.userData.countries = [
+          //   {"Code": "AL", "Name": "Albania"},
+          //   {"Code": "DZ", "Name": "Algeria"}
+          // ];
+        }
+
         if (!session.userData.settings || args.resetUser) {
           // Initialise an empty user settings object if one does not yet exist for the current user.
           session.userData.settings = {};

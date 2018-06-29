@@ -69,7 +69,6 @@ app.listen(PORT, function () {
 app.post('/api/messages', connector.listen());
 
 // Import dialogs.
-//@todo: Turn this into require('./dialogs)(bot, builder);
 require('./dialogs/initial')(bot, builder);
 require('./dialogs/welcome')(bot, builder);
 require('./dialogs/setup')(bot, builder);

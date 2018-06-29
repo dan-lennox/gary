@@ -16,6 +16,10 @@ module.exports = class User {
       this._user.settings = {};
     }
 
+    if (!this._user.countries) {
+      this._user.countries = [];
+    }
+
     if (!this._user.days) {
       this._user.days = [];
     }
@@ -60,6 +64,14 @@ module.exports = class User {
 
   getMostRecentDay() {
     return (this._user.days.length > 0) ? new Day(this._user.days[this._user.days.length - 1]) : null;
+  }
+
+  getCountries() {
+    return this._user.countries;
+  }
+
+  setCountries(countries) {
+    this._user.countries = countries;
   }
 
   checkInTimePassed() {
