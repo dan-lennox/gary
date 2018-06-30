@@ -68,6 +68,9 @@ app.listen(PORT, function () {
 // Listen for messages from users
 app.post('/api/messages', connector.listen());
 
+// Import UI application
+require('../ui/server/index')(app);
+
 // Import dialogs.
 require('./dialogs/initial')(bot, builder);
 require('./dialogs/welcome')(bot, builder);

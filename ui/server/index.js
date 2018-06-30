@@ -1,10 +1,7 @@
-const express = require('express');
-const app = express();
+module.exports = (app) => {
 
-app.get('/', (req, res) => {
-  res.send({ hi: 'there'});
-});
+  app.get('api/test', (req, res) => {
+    res.send({hi: 'there'});
+  });
 
-
-
-app.listen(5000);
+};
