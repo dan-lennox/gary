@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node ./src/app.js && node ./ui/server/index.js",
     "dev": "nodemon --inspect ./src/app.js",
-    "heroku-postbuild": "npm install --prefix ui/server && npm run build --prefix ui/server"
+    "heroku-postbuild": "npm install --prefix ui/server"
   },
   "author": "Daniel Lennox",
   "license": "ISC",
