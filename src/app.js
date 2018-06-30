@@ -56,7 +56,7 @@ bot.localePath(path.join(__dirname, './locale'));
 let app = express();
 
 // Use dynamic port binding.
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, function () {
   // Initialise cron for timed events.
