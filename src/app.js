@@ -76,3 +76,19 @@ require('./dialogs/initial')(bot, builder);
 require('./dialogs/welcome')(bot, builder);
 require('./dialogs/setup')(bot, builder);
 require('./dialogs/tasks')(bot, builder);
+
+// Locally, we have create-react-app running a front end server. So we have both a
+// front and back end server and is just so we have a convenient dev environment (auto rebuilding etc)
+// On production however, we want/need express to handle everything.
+if (process.env.NODE_ENV === 'production') {
+  // Ensure express will serve up production assets, like main.js or main.css
+  // Express has a built in middleware for just this purpose (express.static);
+  app.use(express.static('../ui/server/client/build'));
+
+  // Express will serve up the index.html file if it doesn't recognise the route. (Passing the route
+  // handling onto React Router.
+  // Target any url that hasn't already been been caught by our required in routes above.
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname + '../', 'ui', 'server', 'client', 'build', 'index.html'));
+  });
+}
