@@ -89,6 +89,6 @@ if (process.env.NODE_ENV === 'production') {
   // handling onto React Router.
   // Target any url that hasn't already been been caught by our required in routes above.
   app.get('*', (req, res) => {
-    res.sendFile(path.resolve(__dirname + '../', 'ui', 'server', 'client', 'build', 'index.html'));
+    res.sendFile(path.resolve(__dirname + '..', 'ui', 'server', 'client', 'build', 'index.html'));
   });
 }
