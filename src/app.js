@@ -83,7 +83,7 @@ require('./dialogs/tasks')(bot, builder);
 if (process.env.NODE_ENV === 'production') {
   // Ensure express will serve up production assets, like main.js or main.css
   // Express has a built in middleware for just this purpose (express.static);
-  app.use(express.static('../ui/server/client/build'));
+  app.use(express.static(path.resolve(__dirname + '/..', 'ui', 'server', 'client', 'build')));
 
   // Express will serve up the index.html file if it doesn't recognise the route. (Passing the route
   // handling onto React Router.
