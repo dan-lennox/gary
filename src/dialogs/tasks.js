@@ -17,9 +17,7 @@ module.exports = (bot, builder) => {
       // Load the most recent day created for this user.
       let mostRecentDay = user.getMostRecentDay();
 
-      let today = new Date();
-
-      if (!mostRecentDay || (today.getDate() > mostRecentDay.getDateObject().getDate())) {
+      if (!mostRecentDay || user.checkInTimePassed()) {
         // If the user hasn't set a task for today or if this is their first time using the bot.
         builder.Prompts.text(session, 'What is the absolute MOST IMPORTANT thing you need to do today?');
       }
@@ -79,31 +77,28 @@ module.exports = (bot, builder) => {
     if (!checkInTime || !mostRecentDay || mostRecentDay.getChecked()) {
       session.endDialog();
     }
-    else {
+    // If the checkin time has passed.
+    else if (user.checkInTimePassed()) {
 
-      // If the checkin time has passed.
-      if (user.checkInTimePassed()) {
+      // Record that the user's task for this day was checked.
+      // We only want to prompt them once via cron to see if they have completed their task.
+      mostRecentDay.setChecked();
 
-        // Record that the user's task for this day was checked.
-        // We only want to prompt them once via cron to see if they have completed their task.
-        mostRecentDay.setChecked();
-
-        // If the user already marked their task as completed (without waiting until the end of
-        // the day for the prompt) then, on the start of a new day, we can simply push straight
-        // through to the 'today' dialog and ask for today's new task.
-        if (mostRecentDay.getTask().getCompleted()) {
-          // @todo: We should pass a bespoke message. Eg, Well done yesterday! What's your most important...
-          session.beginDialog('today');
-        }
-        else {
-          // @toto: I should be able to pass arguments here, so I don't have to reload the most
-          // recent day etc.
-          session.beginDialog('checkIn');
-        }
+      // If the user already marked their task as completed (without waiting until the end of
+      // the day for the prompt) then, on the start of a new day, we can simply push straight
+      // through to the 'today' dialog and ask for today's new task.
+      if (mostRecentDay.getTask().getCompleted()) {
+        // @todo: We should pass a bespoke message. Eg, Well done yesterday! What's your most important...
+        session.beginDialog('today');
       }
       else {
-        session.endDialog();
+        // @toto: I should be able to pass arguments here, so I don't have to reload the most
+        // recent day etc.
+        session.beginDialog('checkIn');
       }
+    }
+    else {
+      session.endDialog();
     }
   });
 
