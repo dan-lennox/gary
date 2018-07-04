@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { Chart } from 'react-google-charts';
+import { fetchCountries } from '../actions';
 
 class Map extends Component {
+
+  componentDidMount() {
+    this.props.fetchCountries();
+  }
+
   renderContent() {
 
     let options = {
@@ -10,10 +17,9 @@ class Map extends Component {
 
     let data = [['Country']];
 
-    data.push(['Germany']);
-    data.push(['France']);
-    data.push(['Russia']);
-    data.push(['Australia']);
+    this.props.countries.forEach((country) => {
+      data.push([country]);
+    });
 
     return (
       <div className="mapcontainer">
@@ -37,4 +43,8 @@ class Map extends Component {
   }
 }
 
-export default Map;
+function mapStateToProps({ countries }) {
+  return { countries };
+}
+
+export default connect(mapStateToProps, { fetchCountries })(Map);

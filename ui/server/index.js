@@ -4,4 +4,9 @@ module.exports = (app) => {
     res.send({hi: 'there'});
   });
 
+  app.get('/api/ui/countries', (req, res) => {
+    // @todo: Add requireLogin middleware.
+    res.send(['Australia', 'Canada', 'US']);
+  });
+
 };
