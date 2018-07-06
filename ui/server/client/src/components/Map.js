@@ -18,7 +18,7 @@ class Map extends Component {
     let data = [['Country']];
 
     this.props.countries.forEach((country) => {
-      data.push([country]);
+      data.push([country.Code]);
     });
 
     return (
