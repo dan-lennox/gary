@@ -1,4 +1,6 @@
-module.exports = (app) => {
+const Azure = require('azure-storage');
+
+module.exports = (app, bot, azureConfig) => {
 
   app.get('/api/ui/test', (req, res) => {
     res.send({hi: 'there'});

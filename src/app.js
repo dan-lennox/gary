@@ -69,7 +69,7 @@ app.listen(PORT, function () {
 app.post('/api/messages', connector.listen());
 
 // Import UI application
-require('../ui/server/index')(app);
+require('../ui/server/index')(app, bot, azureConfig);
 
 // Import dialogs.
 require('./dialogs/initial')(bot, builder);
