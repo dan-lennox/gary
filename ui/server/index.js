@@ -1,6 +1,9 @@
 const Azure = require('azure-storage');
+require('./services/passport');
 
 module.exports = (app, bot, azureConfig) => {
+
+  require('./routes/authRoutes')(app);
 
   app.get('/api/ui/test', (req, res) => {
     res.send({hi: 'there'});

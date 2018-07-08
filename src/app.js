@@ -12,6 +12,7 @@ require('dotenv').config({path: path.join(__dirname, '../.env')});
 
 // Contrib dependencies.
 const express = require('express');
+const bodyParser = require('body-parser');
 const builder = require('botbuilder');
 const azureBot = require('botbuilder-azure');
 const facebook = require('botbuilder-facebookextension');
@@ -54,6 +55,10 @@ bot.localePath(path.join(__dirname, './locale'));
 
 // Setup Express Server.
 let app = express();
+
+// Standard express setup. Add body-parser middlewhere to parse
+// request body to json automatically.
+app.use(bodyParser.json());
 
 // Use dynamic port binding.
 const PORT = process.env.PORT || 5000;
