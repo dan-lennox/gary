@@ -40,10 +40,10 @@ let connector = new builder.ChatConnector({
 // Initialise the bot using the defined bot connector and storage option.
 let bot = new builder.UniversalBot(connector).set('storage', tableStorage);
 
-if (process.env.FACEBOOK_TEST_PAGE_ACCESS_TOKEN) {
+if (process.env.FACEBOOK_PAGE_ACCESS_TOKEN) {
   bot.use(
     facebook.RetrieveUserProfile({
-      accessToken: process.env.FACEBOOK_TEST_PAGE_ACCESS_TOKEN,
+      accessToken: process.env.FACEBOOK_PAGE_ACCESS_TOKEN,
       fields: ['locale', 'timezone'] // OPTIONAL
     })
   );
