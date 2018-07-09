@@ -7,8 +7,8 @@ const crypto = require('crypto');
 
 passport.use(new FacebookStrategy(
   {
-    clientID: process.env.FACEBOOK_APP_ID,
-    clientSecret: process.env.FACEBOOK_APP_SECRET,
+    clientID: process.env.FACEBOOK_TEST_APP_ID,
+    clientSecret: process.env.FACEBOOK_TEST_APP_SECRET,
     callbackURL: '/api/ui/auth/facebook/callback'
     //profileFields: ['emails']
   },
@@ -39,11 +39,14 @@ passport.use(new FacebookStrategy(
     //     console.log('called');
     //   });
 
+    //accessToken = 'EAAB370qAWrABABgobdChzzZBv6iiKi8EM3ENpmcEJae38m4EcmlsglxnEJK9D6935zZCIhXDzZAbckLcsqs2kkfHUFVqbpEElwkDWEtSwc0tQrx9T1VkypwNzMHUoZBUhLDGAeTVB0uJFY0A3D089wCoSFuoyB6N9TtJ3HvGybkOqxfTbLtw9aBAOooJkX3NoDpfTYPvnKAgyZCb1hgrrNhP7X6yy1NmYxwKxOFIbtgZDZD';
+    //profile.id = 220541778733038;
+
     fb.get(`/${profile.id}/ids_for_pages`, {
       params: {
-        'page': process.env.FACEBOOK_APP_ID,
+        'page': process.env.FACEBOOK_TEST_APP_ID,
         'access_token': accessToken,
-        'appsecret_proof': crypto.createHmac('sha256', process.env.FACEBOOK_APP_SECRET).update(accessToken).digest('hex')
+        'appsecret_proof': crypto.createHmac('sha256', process.env.FACEBOOK_TEST_APP_SECRET).update(accessToken).digest('hex')
       }
     })
       .then(function (response) {
