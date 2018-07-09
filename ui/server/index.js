@@ -51,6 +51,8 @@ module.exports = (app, bot, azureConfig) => {
           return;
         }
 
+        console.log('countries', userData.countries);
+
         // Return the list of Countries stored on the user's userData object.
         res.send(userData.countries || []);
       });
