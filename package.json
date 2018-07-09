@@ -12,7 +12,7 @@
     "server": "nodemon --inspect ./src/app.js",
     "client": "npm run start --prefix ui/server/client",
     "dev": "concurrently \"yarn server\" \"yarn client\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix ui/server/client && npm run build --prefix ui/server/client"
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix ui/server && npm install --prefix ui/server/client && npm run build --prefix ui/server/client"
   },
   "author": "Daniel Lennox",
   "license": "ISC",
