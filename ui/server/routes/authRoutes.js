@@ -20,4 +20,8 @@ module.exports = (app) => {
       res.redirect('/test-logged-in');
     }
   );
-}
+
+  app.get('/api/ui/current_user', (req, res) => {
+    res.send(req.user || 'Not logged in.');
+  });
+};
