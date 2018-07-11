@@ -21,7 +21,13 @@ module.exports = (app) => {
     }
   );
 
-  app.get('/api/ui/current_user', (req, res) => {
+  // Handle logout request.
+  app.get('/api/ui/user/logout', (req, res) => {
+    req.logout();
+    res.redirect('/');
+  });
+
+  app.get('/api/ui/user', (req, res) => {
     res.send(req.user || 'Not logged in.');
   });
 };
