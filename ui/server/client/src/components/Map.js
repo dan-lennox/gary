@@ -11,27 +11,32 @@ class Map extends Component {
 
   renderContent() {
 
-    let options = {
-      defaultColor: '#FF0000',
-    };
+    if (this.props.auth == false) {
+      return <div></div>;
+    }
+    else {
+      let options = {
+        defaultColor: '#FF0000',
+      };
 
-    let data = [['Country']];
+      let data = [['Country']];
 
-    this.props.countries.forEach((country) => {
-      data.push([country.Code]);
-    });
+      this.props.countries.forEach((country) => {
+        data.push([country.Code]);
+      });
 
-    return (
-      <div className="mapcontainer">
-        <Chart chartType="GeoChart"
-               width={"900px"}
-               height={"500px"}
-               data={data}
-               options={options}
-               graph_id="GeoChart"
-               mapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY}/>
-      </div>
-    );
+      return (
+        <div className="mapcontainer">
+          <Chart chartType="GeoChart"
+                 width={"900px"}
+                 height={"500px"}
+                 data={data}
+                 options={options}
+                 graph_id="GeoChart"
+                 mapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY}/>
+        </div>
+      );
+    }
   }
 
   render() {
@@ -43,8 +48,8 @@ class Map extends Component {
   }
 }
 
-function mapStateToProps({ countries }) {
-  return { countries };
+function mapStateToProps({ countries, auth }) {
+  return { countries, auth };
 }
 
 export default connect(mapStateToProps, { fetchCountries })(Map);

@@ -35,8 +35,6 @@ module.exports = bot => {
     // Connect to the Azure TableStorage.
     let tableService = Azure.createTableService();
 
-    console.log('id to deserialize test again', id);
-
     // Generate an Azure table query to search for Message Address table data for the given userId.
     var query = new Azure.TableQuery()
       .where('RowKey eq ?', id)
@@ -45,7 +43,6 @@ module.exports = bot => {
     // Execute the query.
     tableService.queryEntities(azureConfig.addressesTableName, query, null, (error, result, response) => {
 
-      console.log('result from deserialize', result);
       if (error) {
         console.log(error);
         done(error);

@@ -17,7 +17,7 @@ module.exports = (app) => {
     (req, res) => {
       console.log('res', res);
       // Redirect after succesfull login.
-      res.redirect('/test-logged-in');
+      res.redirect('/');
     }
   );
 
@@ -28,6 +28,6 @@ module.exports = (app) => {
   });
 
   app.get('/api/ui/user', (req, res) => {
-    res.send(req.user || 'Not logged in.');
+    res.send(req.user);
   });
 };

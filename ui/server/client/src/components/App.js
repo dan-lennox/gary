@@ -8,6 +8,12 @@ import Map from './Map';
 
 class App extends Component {
 
+  // React lifecycle method.
+  componentDidMount() {
+    // Call the FETCH_USER actions creator.
+    this.props.fetchUser();
+  }
+
   render() {
     return (
       <div className="container">

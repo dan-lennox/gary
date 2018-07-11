@@ -1,6 +1,7 @@
 const Azure = require('azure-storage');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
+const requireLogin = require('./middleware/requireLogin');
 
 module.exports = (app, bot, azureConfig) => {
 
@@ -26,11 +27,7 @@ module.exports = (app, bot, azureConfig) => {
   /**
    * Retrieve a list of "Conquered" countries.
    */
-  app.get('/api/ui/countries', (req, res) => {
-    // @todo: Add requireLogin middleware.
-    // @todo: I need to implement OAuth integration first, then hook that up to a
-    // @todo: requireLogin middleware.
-
+  app.get('/api/ui/countries', requireLogin, (req, res) => {
     res.send(req.user.countries || []);
   });
 };
