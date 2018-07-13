@@ -11,7 +11,7 @@ class Map extends Component {
 
   renderContent() {
 
-    if (this.props.auth == false) {
+    if (this.props.auth === false) {
       return <div></div>;
     }
     else {

@@ -9,10 +9,7 @@ export const fetchCountries = () => async dispatch => {
 
 export const fetchUser = () => async dispatch => {
 
-  console.log('fetch user called.');
   const res = await axios.get('/api/ui/user');
-
-  console.log(res);
 
   dispatch({ type: FETCH_USER, payload: res.data });
 };
