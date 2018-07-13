@@ -74,7 +74,8 @@ module.exports = bot => {
     {
       clientID: process.env.FACEBOOK_APP_ID,
       clientSecret: process.env.FACEBOOK_APP_SECRET,
-      callbackURL: '/api/ui/auth/facebook/callback'
+      callbackURL: '/api/ui/auth/facebook/callback',
+      proxy: true
       //profileFields: ['emails']
     },
     (accessToken, refreshToken, profile, done) => {
