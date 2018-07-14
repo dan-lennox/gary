@@ -87,49 +87,78 @@ module.exports = bot => {
         baseURL: 'https://graph.facebook.com',
       });
 
-      // Each user has a unique id per facebook app.
-      // The ID stored in our Azure table is the BOT user id.
-      // Given the user's Oauth app (The facebook page) specific id,
-      // we use the the Facebook Graph API id-matching endpoints to determine if the
-      // BOT user and the PAGE user are the same facebook user id.
-      fb.get(`/${profile.id}/ids_for_pages`, {
+      // First we need to get an APP access_token.
+      fb.get('/oauth/access_token', {
         params: {
-          'app': process.env.FACEBOOK_APP_ID,
-          'access_token': accessToken,
-          'appsecret_proof': crypto.createHmac('sha256', process.env.FACEBOOK_APP_SECRET).update(accessToken).digest('hex')
+          'client_id': process.env.FACEBOOK_APP_ID,
+          'client_secret': process.env.FACEBOOK_APP_SECRET,
+          'grant_type': 'client_credentials'
         }
       })
         .then(response => {
 
-          // We found a Bot ID for the given user Oauth User id.
-          let userBotId = response.data.data[0].id;
+            console.log('attempt to get page access token', response.data);
 
-          // Generate an Azure table query to search for Message Address table data for the given User Bot Id.
-          let query = new Azure.TableQuery()
-            .where('RowKey eq ?', userBotId)
-            .and('PartitionKey eq ?', 'part1');
+            let appAccessToken = response.data.access_token;
 
-          // Execute the query.
-          tableService.queryEntities(azureConfig.addressesTableName, query, null, (error, result, response) => {
-            if (error) {
-              done(error);
-              return;
-            }
+            // We then use that APP access token to retrieve any PAGE ids for the current user.
+            fb.get(`/${profile.id}/ids_for_pages`, {
+              params: {
+                //'app': process.env.FACEBOOK_APP_ID,
+                'access_token': appAccessToken,
+                'appsecret_proof': crypto.createHmac('sha256', process.env.FACEBOOK_APP_SECRET).update(appAccessToken).digest('hex')
+              }
+            })
+              .then(response => {
 
-            if (result.entries.length === 0) {
-              done('Bot user not found.');
-              return;
-            }
+                //console.log('response', response.data);
 
-            console.log('USER FOUND!!!', result.entries[0]);
-            done(null, result.entries[0]);
-          });
+                if (response.data.data.length === 0) {
+                  done('No user found.');
+                  return;
+                }
+
+                // We found a Facebook page specific ID for the given user Oauth User.
+                // Facebook Page User Ids are what is stored by the bot messenger app in the Azure
+                // table storage.
+                let fbPageUserId = response.data.data[0].id;
+
+                // Generate an Azure table query to search for Message Address table data for the given User Bot Id.
+                let query = new Azure.TableQuery()
+                  .where('RowKey eq ?', fbPageUserId)
+                  .and('PartitionKey eq ?', 'part1');
+
+                // Execute the query.
+                tableService.queryEntities(azureConfig.addressesTableName, query, null, (error, result, response) => {
+                  if (error) {
+                    done(error);
+                    return;
+                  }
+
+                  if (result.entries.length === 0) {
+                    done('Bot user not found.');
+                    return;
+                  }
+
+                  console.log('USER ROUND!!!');
+                  //console.log('USER FOUND!!!', result.entries[0]);
+                  done(null, result.entries[0]);
+                });
+
+              })
+              .catch(error => {
+                // handle error
+                console.log('error', error);
+              });
+
 
         })
-        .catch(error => {
-          // handle error
-          console.log('error', error);
+        .catch(err => {
+          console.log('error', err.response.data.error.message);
         });
+
+
+
     }
   ));
 };
