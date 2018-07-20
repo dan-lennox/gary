@@ -17,19 +17,27 @@ class Map extends Component {
     else {
       let options = {
         defaultColor: '#FF0000',
+        magnifyingGlass: { enable: true, zoomFactor: 7.5 },
+        //tooltip: {textStyle: {color: '#FF0000'}, showColorCode: true},
+        //displayMode: "text"
+        //resolution: 'provinces'
       };
 
       let data = [['Country']];
 
       this.props.countries.forEach((country) => {
-        data.push([country.Code]);
+        if (country.MapVisible) {
+          data.push([country.Name]);
+        }
+        // else
+        // add to the "non visible" list.
       });
 
       return (
         <div className="mapcontainer">
           <Chart chartType="GeoChart"
-                 width={"900px"}
-                 height={"500px"}
+                 width={"1200px"}
+                 height={"900px"}
                  data={data}
                  options={options}
                  graph_id="GeoChart"
