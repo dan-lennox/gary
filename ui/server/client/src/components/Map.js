@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Chart } from 'react-google-charts';
 import { fetchCountries } from '../actions';
+import { Chart } from 'react-google-charts';
+//import { Chart } from '../patched/react-google-charts/src/index';
 
 class Map extends Component {
 
@@ -18,6 +19,7 @@ class Map extends Component {
       let visibleOptions = {
         defaultColor: '#FF0000',
         magnifyingGlass: { enable: true, zoomFactor: 7.5 },
+        region: 'world'
         //tooltip: {textStyle: {color: '#FF0000'}, showColorCode: true},
         //displayMode: "text"
         //resolution: 'provinces'
@@ -37,39 +39,32 @@ class Map extends Component {
 
       let visibleCountries = [['Country']];
 
-      let nonVisibleCountries = [['Country', 'value']];
-
-      //nonVisibleCountries.push(['Singapore', 1]);
-      //nonVisibleCountries.push(['Monaco', 1]);
 
       this.props.countries.forEach((country) => {
         if (country.MapVisible) {
           visibleCountries.push([country.Name]);
         }
-        else {
-          nonVisibleCountries.push([country.Name]);
-        }
       });
 
-      console.log('visible', visibleCountries);
-      console.log('nonVisible', nonVisibleCountries);
+      // let chartEvents = [
+      //   {
+      //     eventName: 'ready',
+      //     callback: () => {
+      //       console.log('called chart callback');
+      //     },
+      //   }
+      // ];
 
       return (
         <div className="mapcontainer">
           <Chart chartType="GeoChart"
                  width={"1200px"}
                  height={"900px"}
+                 overlay="GeoChartNonVisible"
                  data={visibleCountries}
                  options={visibleOptions}
                  graph_id="GeoChartVisible"
-                 mapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY}/>
-
-          <Chart chartType="GeoChart"
-                 width={"1200px"}
-                 height={"900px"}
-                 data={nonVisibleCountries}
-                 options={nonVisibleOptions}
-                 graph_id="GeoChartNonVisible"
+                 //chartEvents={chartEvents}
                  mapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_KEY}/>
         </div>
       );
