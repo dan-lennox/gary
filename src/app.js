@@ -83,8 +83,8 @@ require('./dialogs/setup')(bot, builder);
 require('./dialogs/tasks')(bot, builder);
 
 // Debug
-const debug = require('./util/debug');
-debug.listAllUsers(bot);
+// const debug = require('./util/debug');
+// debug.listAllUsers(bot);
 
 // Locally, we have create-react-app running a front end server. So we have both a
 // front and back end server and is just so we have a convenient dev environment (auto rebuilding etc)

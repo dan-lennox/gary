@@ -20,21 +20,6 @@ class Map extends Component {
         defaultColor: '#FF0000',
         magnifyingGlass: { enable: true, zoomFactor: 7.5 },
         region: 'world'
-        //tooltip: {textStyle: {color: '#FF0000'}, showColorCode: true},
-        //displayMode: "text"
-        //resolution: 'provinces'
-      };
-
-      let nonVisibleOptions = {
-        defaultColor: '#FF0000',
-        displayMode: 'markers',
-        region: 'world',
-        sizeAxis: {
-          minSize: 1,
-          maxSize: 4
-        },
-        legend: 'none',
-        colorAxis: {colors: ['red', 'red']}
       };
 
       let visibleCountries = [['Country']];

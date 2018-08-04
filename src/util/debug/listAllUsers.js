@@ -15,13 +15,11 @@ module.exports = bot => {
 
     if (error) {
       console.log(error);
-      done(error);
       return;
     }
 
     if (result.entries.length === 0) {
       console.log("No user's found.");
-      done("No user's found.");
       return;
     }
 
@@ -29,7 +27,5 @@ module.exports = bot => {
     console.log(result.entries);
     console.log('\n');
     console.log('END DEBUG ---------------------------------------------------------------------------------------\n');
-
-
   });
 };
