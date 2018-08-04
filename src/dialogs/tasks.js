@@ -3,6 +3,7 @@ const Day = require('../models/day.model');
 const Task = require('../models/task.model');
 const moment = require('moment');
 const CountriesList = require('../models/countriesList.model');
+const viewMapCard = require('../models/viewMapCard.model');
 
 module.exports = (bot, builder) => {
 
@@ -104,10 +105,8 @@ module.exports = (bot, builder) => {
 
   bot.dialog('checkIn', [
     (session) => {
-      //debugger;
       let user = new User(session.userData);
 
-      // Load the most recent Day.
       // Load the most recent Day.
       let mostRecentDay = user.getMostRecentDay();
 
@@ -134,7 +133,6 @@ module.exports = (bot, builder) => {
         let mostRecentDay = user.getMostRecentDay();
         let currentTask = mostRecentDay.getTask();
 
-
         let countries = new CountriesList();
 
         // Retrieve a random country that the user has not yet conquered.
@@ -152,6 +150,10 @@ module.exports = (bot, builder) => {
 
                 // Let the user know about their new conquest!
                 session.send(`Excellent! I'm pleased to report that ${country.Name} has fallen under our control. You empire has now grown to ${user.getCountries().length} countries`);
+
+                // Render a "View Map" card to prompt the user to view their map of countries.
+                var msg = viewMapCard(builder, session);
+                session.send(msg);
 
                 // Set the current task for for yesterday as completed.
                 currentTask.setCompleted();
@@ -174,21 +176,40 @@ module.exports = (bot, builder) => {
         else {
 
           // Remove a country from the empire!
-          let userCountries = new CountriesList(user.getCountries());
-          userCountries.removeRandom()
-            .then(({country, list}) => {
+          if (user.getCountries().length === 0) {
 
-              // Save the updated list of countries to the user.
-              user.setCountries(list);
+            session.send(`This is unfortunate... I sincerly hope you will do better tomorrow.`);
 
-              // Let the user know about their recent failure!
-              session.send(`This is unfortunate... I am ashamed to report that ${country.Name} successfully rebelled. Your empire now only has ${user.getCountries().length} countries.`);
-              session.send('We shall try again tomorrow.');
+            // Render a "View Map" card to prompt the user to view their map of countries.
+            var msg = viewMapCard(builder, session);
+            session.send(msg);
 
-              if (user.checkInTimePassed()) {
-                session.beginDialog('today');
-              }
-            });
+            if (user.checkInTimePassed()) {
+              session.beginDialog('today');
+            }
+          }
+          else {
+            let userCountries = new CountriesList(user.getCountries());
+
+            userCountries.removeRandom()
+              .then(({country, list}) => {
+
+                // Save the updated list of countries to the user.
+                user.setCountries(list);
+
+                // Let the user know about their recent failure!
+                session.send(`This is unfortunate... I am ashamed to report that ${country.Name} successfully rebelled. Your empire now only has ${user.getCountries().length} countries.`);
+                session.send('We shall try again tomorrow.');
+
+                // Render a "View Map" card to prompt the user to view their map of countries.
+                var msg = viewMapCard(builder, session);
+                session.send(msg);
+
+                if (user.checkInTimePassed()) {
+                  session.beginDialog('today');
+                }
+              });
+          }
         }
       }
     }
