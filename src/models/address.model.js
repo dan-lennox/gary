@@ -68,10 +68,33 @@ module.exports = class Address {
     });
   }
 
+  // find(userId)
+  // Move the passport.js implementation here.
+
 
   // update
 
-  // delete
+  delete(userId) {
+    return Rx.Observable.create((observer) => {
+
+      var entityDescriptor = { PartitionKey: {_: AzureConfig.addressesTablePartition, $: 'Edm.String'},
+        RowKey: {_: userId, $: 'Edm.String'},
+      };
+
+      // Delete an address with the given User ID.
+      this.tableService.deleteEntity(AzureConfig.addressesTableName, entityDescriptor, (error, response) => {
+        if (error) {
+          console.log('Error: ', error);
+          observer.error(error);
+        }
+        else {
+          let msg = '---------------------- User address deleted ----------------------';
+          observer.next(msg);
+          observer.complete(msg);
+        }
+      });
+    });
+  }
 
   // load
 };
