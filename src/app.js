@@ -86,6 +86,20 @@ require('./dialogs/tasks')(bot, builder);
 // const debug = require('./util/debug');
 // debug.listAllUsers(bot);
 
+// Debug:
+// Nuke the default user for testing purposes.
+// const User = require('./models/user.model');
+// let user = new User({ platform: { name: 'emulator', id: 'default-user' }});
+// user.delete().subscribe(
+//   (msg) => {
+//     console.log(msg);
+//   },
+//   (error) => {
+//     console.log('Error deleting User Bot Storage', error);
+//   }
+// );
+
+
 // Locally, we have create-react-app running a front end server. So we have both a
 // front and back end server and is just so we have a convenient dev environment (auto rebuilding etc)
 // On production however, we want/need express to handle everything.

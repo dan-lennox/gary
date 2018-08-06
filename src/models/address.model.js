@@ -48,7 +48,7 @@ module.exports = class Address {
   getAll() {
     return Rx.Observable.create((observer) => {
       // Create an empty table query.
-      var query = new Azure.TableQuery();
+      let query = new Azure.TableQuery();
 
       // Query the Addresses table for all addresses.
       this.tableService.queryEntities(AzureConfig.addressesTableName, query, null, function (error, result, response) {
@@ -77,7 +77,7 @@ module.exports = class Address {
   delete(userId) {
     return Rx.Observable.create((observer) => {
 
-      var entityDescriptor = { PartitionKey: {_: AzureConfig.addressesTablePartition, $: 'Edm.String'},
+      let entityDescriptor = { PartitionKey: {_: AzureConfig.addressesTablePartition, $: 'Edm.String'},
         RowKey: {_: userId, $: 'Edm.String'},
       };
 
