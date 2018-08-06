@@ -3,13 +3,16 @@
 // on the bot session in a consistent way.
 const Day = require('./day.model');
 const moment = require('moment');
+const AzureConfig = require('../config/azure');
+const Azure = require('azure-storage');
+const Rx = require('rxjs/Rx');
 
 module.exports = class User {
 
   constructor(user){
     this._user = user;
     if (!this._user.profile) {
-      this.user.profile = {};
+      this._user.profile = {};
     }
 
     if (!this._user.settings) {
@@ -103,4 +106,72 @@ module.exports = class User {
     return (today > checkInDate);
   }
 
+  // WARNING: INCOMPLETE! For debug usage only. Do not use on production data.
+  delete() {
+    return Rx.Observable.create((observer) => {
+
+      // Initialise the Azure table storage service for interacting with tables.
+      let tableService = Azure.createTableService();
+
+      // Create an empty table query.
+      let query = new Azure.TableQuery();
+
+      // Query the Bot storage table for all addresses.
+      // tableService.queryEntities(AzureConfig.botTableName, query, null, function (error, result, response) {
+      //   if (error) {
+      //     console.log('Error: ', error);
+      //     observer.error(error);
+      //   }
+      //   else {
+      //
+      //     console.log(result.entries);
+      //
+      //     // Return any addresses.
+      //     observer.next(result.entries);
+      //     observer.complete();
+      //   }
+      // });
+
+      let entityDescriptor = { PartitionKey: {_: this._user.platform.id, $: 'Edm.String'},
+        RowKey: {_: 'userData', $: 'Edm.String'},
+      };
+
+      // Delete an address with the given User ID.
+      tableService.deleteEntity(AzureConfig.botTableName, entityDescriptor, (error, response) => {
+        if (error) {
+          console.log('Error: ', error);
+          observer.error(error);
+        }
+        else {
+
+          // At this point the table row with partition key 'default-user' and
+          // RowKey 'userData' should have been deleted.
+          // However additional data is stored with ROWKEY: default-user and
+          // PARTITIONKEY: some arbitrary key, eg. cb2c30ajbfm6', which will be different
+          // each time the table is recreated.
+          // @TODO: Find a REAL way to delete a user, withotu requiring prior knowledge of this
+          // key...
+          // @todo: Perhaps simply noting and storing this partition key for the prod environment
+          // in the azure config is enough?
+
+          let entityDescriptor = { PartitionKey: {_: 'cb2c30ajbfm6', $: 'Edm.String'},
+            RowKey: {_: this._user.platform.id, $: 'Edm.String'},
+          };
+
+          // Delete an address with the given User ID.
+          tableService.deleteEntity(AzureConfig.botTableName, entityDescriptor, (error, response) => {
+            if (error) {
+              console.log('Error: ', error);
+              observer.error(error);
+            }
+            else {
+              let msg = '---------------------- User bot storage deleted ----------------------';
+              observer.next(msg);
+              observer.complete(msg);
+            }
+          });
+        }
+      });
+    });
+  }
 };
