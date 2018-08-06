@@ -3,6 +3,7 @@
 // on the bot session in a consistent way.
 const Day = require('./day.model');
 const moment = require('moment');
+const addressModel = require('./address.model');
 const AzureConfig = require('../config/azure');
 const Azure = require('azure-storage');
 const Rx = require('rxjs/Rx');
@@ -165,9 +166,22 @@ module.exports = class User {
               observer.error(error);
             }
             else {
-              let msg = '---------------------- User bot storage deleted ----------------------';
-              observer.next(msg);
-              observer.complete(msg);
+
+              // We should also really delete this user's Message Address table entry.
+              let Address = new addressModel();
+              Address.delete('default-user').subscribe(
+                (result) => {
+                  console.log(result);
+
+                  let msg = '---------------------- User bot storage deleted ----------------------';
+                  observer.next(msg);
+                  observer.complete(msg);
+                },
+                (error) => {
+                  console.log('error deleting address', error);
+                  observer.error(error);
+                }
+              );
             }
           });
         }
