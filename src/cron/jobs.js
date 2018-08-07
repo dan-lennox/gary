@@ -6,7 +6,7 @@ var processDailyTasks = require('./processDailyTasks.js')
 module.exports = {
 
   start(bot) {
-    cron.schedule('* * * * *', function() {
+    cron.schedule('* * * * *', () => {
 
       // Run the process daily tasks job.
       processDailyTasks(bot);

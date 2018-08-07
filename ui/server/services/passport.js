@@ -36,7 +36,7 @@ module.exports = bot => {
     let tableService = Azure.createTableService();
 
     // Generate an Azure table query to search for Message Address table data for the given userId.
-    var query = new Azure.TableQuery()
+    let query = new Azure.TableQuery()
       .where('RowKey eq ?', id)
       .and('PartitionKey eq ?', 'part1');
 
@@ -87,7 +87,7 @@ module.exports = bot => {
         baseURL: 'https://graph.facebook.com',
       });
 
-      // First we need to get an APP access_token.
+      // First we need to get a Facebook APP access_token.
       fb.get('/oauth/access_token', {
         params: {
           'client_id': process.env.FACEBOOK_APP_ID,
@@ -101,7 +101,7 @@ module.exports = bot => {
 
             let appAccessToken = response.data.access_token;
 
-            // We then use that APP access token to retrieve any PAGE ids for the current user.
+            // We then use that Facebook APP access token to retrieve any Facebook PAGE ids for the current user.
             fb.get(`/${profile.id}/ids_for_pages`, {
               params: {
                 //'app': process.env.FACEBOOK_APP_ID,
@@ -156,9 +156,6 @@ module.exports = bot => {
         .catch(err => {
           console.log('error', err.response.data.error.message);
         });
-
-
-
     }
   ));
 };
