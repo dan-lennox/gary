@@ -117,7 +117,7 @@ module.exports = class User {
       // Create an empty table query.
       let query = new Azure.TableQuery();
 
-      // Query the Bot storage table for all addresses.
+      //// Query the Bot storage table for all addresses.
       // tableService.queryEntities(AzureConfig.botTableName, query, null, function (error, result, response) {
       //   if (error) {
       //     console.log('Error: ', error);
@@ -125,7 +125,7 @@ module.exports = class User {
       //   }
       //   else {
       //
-      //     console.log(result.entries);
+      //     console.log('All bot accounts', result.entries);
       //
       //     // Return any addresses.
       //     observer.next(result.entries);
@@ -155,7 +155,7 @@ module.exports = class User {
           // @todo: Perhaps simply noting and storing this partition key for the prod environment
           // in the azure config is enough?
 
-          let entityDescriptor = { PartitionKey: {_: 'cb2c30ajbfm6', $: 'Edm.String'},
+          let entityDescriptor = { PartitionKey: {_: process.env.DEFAULT_USER_BOT_TABLE_PARTITION, $: 'Edm.String'},
             RowKey: {_: this._user.platform.id, $: 'Edm.String'},
           };
 
